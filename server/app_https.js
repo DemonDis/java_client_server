@@ -18,8 +18,8 @@ app.get("/", (req, res) => {
 
 // Read SSL certificate and key files
 const options = {
-  key: fs.readFileSync(path.join(__dirname, "localhost-key.pem")),
-  cert: fs.readFileSync(path.join(__dirname, "localhost.pem")),
+  key: fs.readFileSync(path.join(__dirname, "src/certificate/localhost-key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "src/certificate/localhost.pem")),
 };
 
 // Create HTTPS server

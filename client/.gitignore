@@ -3,6 +3,5 @@ node_modules
 # env
 .env.dev
 
-# pem
-certificate
-*.pem
+# pem 
+certificate/

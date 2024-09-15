@@ -14,7 +14,7 @@ node app_http.js
 
 ### Technology stack
 1. NODE - **v21.7.1**
-2. JAVA - **22.0.2 2024-07-16**
+2. JAVA - **"17.0.12" 2024-07-16 LTS**
 
 #### Info
 1. [Building an Express App with an HTTPS Server ](https://dev.to/fredabod/building-an-express-app-with-an-https-server-2mbj)
