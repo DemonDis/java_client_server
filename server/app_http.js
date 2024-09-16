@@ -1,6 +1,16 @@
 var express = require('express');
 var app = express();
 
+app.use(express.json({
+    inflate: true,
+    limit: '100kb',
+    reviver: null,
+    strict: true,
+    type: 'application/json',
+    verify: undefined
+}));
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', function (req, res) {
     res.send('<b>My</b> first express http server');
 });
@@ -11,7 +21,8 @@ app.route('/article')
     res.send('Get the article');
 })
 .post(function(req, res) {
-    res.send('Add an article');
+    // res.send('Add an article');
+    res.send(`Данные: ${JSON.stringify(req.body)}`);
 })
 .put(function(req, res) {
     res.send('Update the article');
