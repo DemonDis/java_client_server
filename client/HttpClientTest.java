@@ -9,7 +9,7 @@ public class HttpClientTest {
     public static void main(String[] args) throws Exception {
 
         HttpClient client = HttpClient.newBuilder().build();
-        String json = "{\"json-parsing\":\"just with Express\", \"no\":\"body-parser\"}";
+        String json = "{\"send_request\":\"Отправляю из java-client\", \"request_type\":\"{}\"}";
         
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:3000/article"))

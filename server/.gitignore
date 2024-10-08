@@ -6,3 +6,6 @@ node_modules
 # pem
 certificate
 *.pem
+
+# lock
+package-lock.json

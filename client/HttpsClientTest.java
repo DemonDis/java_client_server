@@ -1,7 +1,10 @@
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -47,22 +50,41 @@ public class HttpsClientTest {
         String myData = "{\"username\":\"username\",\"password\":\"password\"}";
         // Install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
- 
-        URL url = new URL("https://localhost:4500/");
+        // char[] chars = new char[]{'A','B','C','D','E'};
+        String urlParameters  = "param1=a&param2=b&param3=c";
+        byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
+        int    postDataLength = postData.length;
+        String request        = "https://localhost:4500/";
+        // String request        = "https://localhost:3002";
+        // URL    url            = new URL( request );
+
+        URL url = new URL(request);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        String json = "{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}";
+        String LINE_END = "\r\n";
+
         con.setRequestMethod( "POST" );
+        con.setInstanceFollowRedirects( false );
         con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setUseCaches (true);
+        con.setRequestProperty("Access-Control-Allow-Origin", "*");
+        con.setRequestProperty("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+        con.setRequestProperty("Access-Control-Allow-Credentials", "true");
+        con.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
+
+        con.setUseCaches (false);
         con.setDoOutput(true);
         con.setDoInput(true);
- 
-        // try(OutputStream os = con.getOutputStream()) {
-        //     byte[] input = POST_PARAMS.getBytes("utf-8");
-        //     os.write(input, 0, input.length);           
-        // }         
-    
+        con.connect(); 
+      
+        try(DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
+            // System.out.print(myData);
+            wr.writeBytes( json );
+            wr.flush();
+            // wr.close();
+        }
+        
         Reader reader = new InputStreamReader(con.getInputStream());
-            
+        
         while (true) {
             int ch = reader.read();
             if (ch==-1) {
