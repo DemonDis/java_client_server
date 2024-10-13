@@ -1,45 +1,34 @@
 # CLIENT (java)
-
-## Add json parser
 ```bash
+java -version
+# version
+java version "17.0.12" 2024-07-16 LTS
+```
 
+## Echo
+```bash
 echo ${CLASSPATH}
-
-./lib/javax.json-api-1.1.4.jar
-
-export CLASSPATH=./lib/javax.json-api-1.1.4.jar 
-
-export CLASSPATH=/path/to/classes:./lib/jar/file.jar
-
-$ export CLASSPATH=.:/javax.json-1.0.jar
+export CLASSPATH=.:/javax.json-api-1.1.4.jar
 ```
 
-## Client start
+## Run
 ```bash
-# install node_modules
+# only lib
+java -cp javax.json-api-1.1.4.jar MetricTest.java
+# all libs
+java -cp ".jar:lib/*" MetricTest.java
+# or
+javac -cp ".jar:lib/*" MetricTest.java
+# run
+java MetricTest
 ```
 
-### Technology stack
-2. JAVA - **"17.0.12" 2024-07-16 LTS**
+### Libs
+1. javax.json-api-1.1.4.jar
+2. javax.json-1.1.4.jar
 
 #### Info
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)
 2. [Java json jar](https://repo1.maven.org/maven2/javax/json/javax.json-api/1.1.4/)
-
-https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html
-
-http://www.java2s.com/Code/Jar/j/Downloadjavaxjson10jar.htm
-
-```bash
-
-javac MetricTest.java
-java -cp javax.json-1.0.jar MetricTest
-
-java -cp javax.json-1.0.jar  MetricTest.java
-```
-
-https://stackoverflow.com/questions/24714493/java-json-package-importing-failure
-
-https://howtodoinjava.com/java/basics/java-classpath/
-
-java -cp javax.json-1.0.jar  Example.java
+3. [Interface JsonObject](https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html)
+4. [Java Classpath](https://howtodoinjava.com/java/basics/java-classpath/)
