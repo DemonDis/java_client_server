@@ -1,7 +1,9 @@
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.OutputStreamWriter;
+import java.io.BufferedReader;
 
 import java.security.cert.X509Certificate;
 
@@ -24,18 +26,14 @@ import javax.json.*;
 */
 
 public class MetricTest {
-    static String login = "{\"username\": \"login\", \"password\":\"1010\"}";
     static String url_s = "https://localhost:4500";
-    
+    static JsonObject login = Json.createObjectBuilder()
+        .add("username", "login")
+        .add("password", "1010")
+    .build();
+
     public static void main(String[] args) throws Exception {
- 
-    String json = "{'id': 1001,'firstName': 'Lokesh','lastName': 'Gupta','email': null}";
- 
-    JsonReader jsonReader = new JsonReader(new StringReader(json));
-    jsonReader.setLenient(true);
-    
-        // JsonObject object = jsonReader.readObject();
-        // jsonReader.close();
+
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
@@ -64,24 +62,21 @@ public class MetricTest {
         con.setRequestMethod( "POST" );
         con.setRequestProperty("Content-Type", "application/json; utf-8");
         con.setConnectTimeout(10000);
-
         con.setDoOutput(true);
         con.setDoInput(true);
 
         try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
-            writer.write(login);
+            writer.write(login.toString());
         }
-    
-        String str = "{\"username\": \"login\", \"password\":\"1010\"}";
 
-        Reader reader = new InputStreamReader(con.getInputStream());
-        
-        while (true) {
-            int ch = reader.read();
-            if (ch==-1) {
-                break;
-            }
-            System.out.print((char)ch);
-        }
+        InputStream is = con.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        JsonReader reader = Json.createReader (br);
+        JsonObject obj = reader.readObject();
+        reader.close();
+
+        System.out.println("\n" + obj + "\n");
     }
 }

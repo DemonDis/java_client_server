@@ -23,12 +23,23 @@ javac -cp ".jar:lib/*" MetricTest.java
 java MetricTest
 ```
 
+## Structure
+```
+📁 client
+├── 📁 credentials/
+|   ├── ...
+|   └── ...
+├── 📁 lib/
+|   ├── javax.json-1.1.4.jar
+|   └── javax.json-api-1.1.4.jar
+└── ...
+```
+
 ### Libs
 1. javax.json-api-1.1.4.jar
 2. javax.json-1.1.4.jar
 
 #### Info
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)
-2. [Java json jar](https://repo1.maven.org/maven2/javax/json/javax.json-api/1.1.4/)
-3. [Interface JsonObject](https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html)
-4. [Java Classpath](https://howtodoinjava.com/java/basics/java-classpath/)
+2. [Interface JsonObject](https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html)
+3. [Java Classpath](https://howtodoinjava.com/java/basics/java-classpath/)
