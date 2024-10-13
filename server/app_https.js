@@ -15,11 +15,11 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
-app.route('/article')
-.post((req, res) => {
-    res.send(`Server получил и вернул то же: ${JSON.stringify(req.body)}`);
+app.route('/')
+  .post((req, res) => {
     console.log('Client прислал', req.body);
-})
+    res.send({'name': 'Hi!'});
+  })
 
 const httpsServer = https.createServer({
   key: fs.readFileSync('src/certificate/key.pem'),
