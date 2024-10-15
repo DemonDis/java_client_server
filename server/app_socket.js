@@ -1,4 +1,3 @@
-'use strict';
 const https = require('https');
 const fs = require('fs');
 const WebSocket  = require('ws');
