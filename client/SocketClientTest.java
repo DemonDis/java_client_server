@@ -1,5 +1,6 @@
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.websocket.*;
 
 public class SocketClientTest {
 

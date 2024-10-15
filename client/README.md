@@ -38,6 +38,7 @@ java MetricTest
 ### Libs
 1. javax.json-api-1.1.4.jar
 2. javax.json-1.1.4.jar
+javax.websocket-api
 
 #### Info
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)

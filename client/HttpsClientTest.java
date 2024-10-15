@@ -1,30 +1,50 @@
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
 import java.io.Reader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.StringReader;
+import java.io.OutputStreamWriter;
+import java.io.BufferedReader;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 
+import java.net.URL;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net. ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import javax.json.*;
+
+/*
+Файл: MetricTest.java
+Описание: Метрики отклика арі
+* Права (Copyright): (C) 2024
+* @author Di @since 10.10.2024
+*/
+
+// class TrustAllCertificates implements X509TrustManager
+// {
+//     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+//         return null;
+//     }
+//     public void checkClientTrusted(X509Certificate[] certs, String authType) {
+//     }
+//     public void checkServerTrusted(X509Certificate[] certs, String authType) {
+//     }
+// }
+
 public class HttpsClientTest {
+    static String url_s = "https://localhost:4500";
+    static JsonObject login = Json.createObjectBuilder()
+        .add("username", "login")
+        .add("password", "1010")
+    .build();
 
-	// private static final String USER_AGENT = "Mozilla/5.0";
-
-	// private static final String GET_URL = "https://localhost:9090/SpringMVCExample";
-
-	// private static final String POST_URL = "https://localhost:9090/SpringMVCExample/home";
-
-	private static final String POST_PARAMS = "userName=Pankaj";
     public static void main(String[] args) throws Exception {
-        // Create a trust manager that does not validate certificate chains
+
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
@@ -35,62 +55,40 @@ public class HttpsClientTest {
                 }
             }
         };
- 
-        // Install the all-trusting trust manager
+        // TrustAllCertificates trustAllCerts = new TrustAllCertificates();
+
         SSLContext sc = SSLContext.getInstance("SSL");
         sc.init(null, trustAllCerts, new java.security.SecureRandom());
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
  
-        // Create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier() {
             public boolean verify(String hostname, SSLSession session) {
                 return true;
             }
         };
-        String myData = "{\"username\":\"username\",\"password\":\"password\"}";
-        // Install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        // char[] chars = new char[]{'A','B','C','D','E'};
-        String urlParameters  = "param1=a&param2=b&param3=c";
-        byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
-        int    postDataLength = postData.length;
-        String request        = "https://localhost:4500/";
-        // String request        = "https://localhost:3002";
-        // URL    url            = new URL( request );
 
-        URL url = new URL(request);
+        URL url = new URL(url_s);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-        String json = "{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}";
-        String LINE_END = "\r\n";
 
         con.setRequestMethod( "POST" );
-        con.setInstanceFollowRedirects( false );
         con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Access-Control-Allow-Origin", "*");
-        con.setRequestProperty("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
-        con.setRequestProperty("Access-Control-Allow-Credentials", "true");
-        con.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
-
-        con.setUseCaches (false);
+        con.setConnectTimeout(10000);
         con.setDoOutput(true);
         con.setDoInput(true);
-        con.connect(); 
-      
-        try(DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-            // System.out.print(myData);
-            wr.writeBytes( json );
-            wr.flush();
-            // wr.close();
+
+        try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
+            writer.write(login.toString());
         }
-        
-        Reader reader = new InputStreamReader(con.getInputStream());
-        
-        while (true) {
-            int ch = reader.read();
-            if (ch==-1) {
-                break;
-            }
-            System.out.print((char)ch);
-        }
+
+        InputStream is = con.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        JsonReader reader = Json.createReader (br);
+        JsonObject obj = reader.readObject();
+        reader.close();
+
+        System.out.println("\n" + obj + "\n");
     }
 }
