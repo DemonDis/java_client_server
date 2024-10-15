@@ -61,3 +61,7 @@ keytool -genkeypair -keystore arm.p12 -storetype PKCS12 -storepass MY_PASSWORD -
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)
 2. [Interface JsonObject](https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html)
 3. [Java Classpath](https://howtodoinjava.com/java/basics/java-classpath/)
+
+https://dzone.com/articles/sample-java-web-socket-client
+
+https://www.delftstack.com/howto/java/websocket-client-java/#then-we-need-to-create-a-clientmanager-and-ask-it-to-connect-to-the-annotated-endpoint-which-is-our-client-the-uri-will-specify-the-server

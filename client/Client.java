@@ -24,19 +24,21 @@ public class Client {
 
     public static void main(String[] args) {
         final WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            final ClientManager client = ClientManager.createClient();
+
             String url = "wss://localhost:8999/wss";
             System.out.println("Connecting to " + url);
+            ClientManager client = ClientManager.createClient();
+            System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "src/conexion/keystore.jks");
+            System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "src/conexion/keystore.jks");
+            System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "mineria");
+            System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "mineria");
+                
+            System.out.println("propery : " + System.getProperty(SSLContextConfigurator.KEY_STORE_FILE));
 
-            System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "/key");
-            System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "/key");
-            System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "123456");
-            System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "123456");
-            
             System.out.println("propery : " + System.getProperty(SSLContextConfigurator.KEY_STORE_FILE));
 
             final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
-
+    
             defaultConfig.retrieve(System.getProperties());
             // or setup SSLContextConfigurator using its API.
     
@@ -44,7 +46,7 @@ public class Client {
     
             client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
             System.out.println("put properties");
-
+            
             try (javax.websocket.Session session = client.connectToServer(MyClientEndpoint.class, URI.create(url))) {
                 for (int i = 1; i <= 10; ++i) {
                     try {
