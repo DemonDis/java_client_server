@@ -1,3 +1,4 @@
+package example;
 import java.io.*;
 import java.net.URI;
 import javax.websocket.*;

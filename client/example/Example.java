@@ -1,3 +1,4 @@
+package example;
 import java.io.FileInputStream;
 import java.io.InputStream;
 

@@ -1,5 +1,4 @@
-package com.lge.racss.test;
-
+package example;
 import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -12,17 +11,18 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.websocket.ContainerProvider;
-import javax.websocket.DeploymentException;
-import javax.websocket.EncodeException;
-import javax.websocket.WebSocketContainer;
-
+// import javax.websocket.ContainerProvider;
+// import javax.websocket.DeploymentException;
+// import javax.websocket.EncodeException;
+// import javax.websocket.WebSocketContainer;
+import javax.websocket.*;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 
+@ClientEndpoint
 public class Application2 extends WebSocketAdapter {
 
     static {
@@ -70,14 +70,14 @@ public class Application2 extends WebSocketAdapter {
 
         final WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
-        String url = "wss://10.177.170.140:8443/signaling"; // or
+        String url = "wss://localhost:8080/wss/v1"; // or
         // "wss://echo.websocket.org"
         final ClientManager client = ClientManager.createClient();
 
-        System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "/key/server");
-        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "/key/server");
-        System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "123456");
-        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "123456");
+        System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "./key/server/arm.jks");
+        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "./key/server/arm.jks");
+        System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "MY_PASSWORD");
+        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "MY_PASSWORD");
 
         System.out.println("propery : " + System.getProperty(SSLContextConfigurator.KEY_STORE_FILE));
 
@@ -90,7 +90,7 @@ public class Application2 extends WebSocketAdapter {
 
         client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
         System.out.println("put properties");
-        try (javax.websocket.Session session = client.connectToServer(WebsocketClientEndpoint.class, URI.create(url))) {
+        try (javax.websocket.Session session = client.connectToServer(Application2.class, URI.create(url))) {
             for (int i = 1; i <= 10; ++i) {
                 try {
                     System.out.println("send");

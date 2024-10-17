@@ -1,3 +1,4 @@
+package example;
 import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -23,14 +24,14 @@ public class App {
 
         final WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
-        String url = "wss://10.177.170.140:8443/signaling"; // or
+        String url = "wss://localhost:8080/wss/v1"; // or
         // "wss://echo.websocket.org"
         final ClientManager client = ClientManager.createClient();
 
-        System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "/key/server");
-        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "/key/server");
-        System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "123456");
-        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "123456");
+        System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "./arm.jks");
+        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "./arm.jks");
+        System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "MY_PASSWORD");
+        System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "MY_PASSWORD");
 
         System.out.println("propery : " + System.getProperty(SSLContextConfigurator.KEY_STORE_FILE));
 

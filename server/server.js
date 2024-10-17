@@ -20,7 +20,7 @@ wss.on('connection', function connection(ws) {
   });
 });
 
-server.listen(8080, function listening() {
+server.listen(8443, function listening() {
   const ws = new WebSocket(`wss://localhost:${server.address().port}/wss/v1`, {
     rejectUnauthorized: false
   });

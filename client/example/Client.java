@@ -1,3 +1,4 @@
+package example;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
@@ -28,8 +29,8 @@ public class Client {
             String url = "wss://localhost:8999/wss";
             System.out.println("Connecting to " + url);
             ClientManager client = ClientManager.createClient();
-            System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "src/conexion/keystore.jks");
-            System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "src/conexion/keystore.jks");
+            System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "/src/conexion/keystore.jks");
+            System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "/src/conexion/keystore.jks");
             System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "mineria");
             System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "mineria");
                 

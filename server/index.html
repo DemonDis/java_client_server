@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>WSS Client Test</title>
+<script>
+var socket = new WebSocket('wss://localhost:8080');
+
+socket.onopen = function() {
+	alert('Соединение установлено.');
+}
+
+socket.onclose = function(event) {
+	if(event.wasClean){
+		alert('Соединение закрыто чисто');
+	} else {
+		alert('Обрыв соединения'); // например, "убит" процесс сервера
+	}
+	alert('Код: ' + event.code + ' причина: ' + event.reason);
+}
+
+socket.onmessage = function(event) {
+	alert('Получены данные ' + event.data);
+}
+
+socket.onerror = function(error) {
+	alert('Ошибка ' + error.message);
+}
+
+function SendMess(){
+	var textarea = document.body.querySelectorAll('textarea')[0];
+	socket.send(textarea.value);
+	textarea.value = '';
+}
+</script>
+</head>
+<body>
+<textarea></textarea><br>
+<button onclick="SendMess();">Отправить</button><br>
+<button onclick="socket.close();">Отключится</button>
+</body>
+</html>

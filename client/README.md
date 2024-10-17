@@ -48,7 +48,16 @@ s
 
 ## Generate keys
 ```bash
+# p12
 keytool -genkeypair -keystore arm.p12 -storetype PKCS12 -storepass MY_PASSWORD -alias KEYSTORE_ENTRY -keyalg RSA -keysize 2048 -validity 99999 -dname "CN=My SSL Certificate, OU=My Team, O=My Company, L=My City, ST=My State, C=SA" -ext san=dns:mydomain.com,dns:localhost,ip:127.0.0.1
+# jks
+keytool -importkeystore -srckeystore arm.p12 \
+        -srcstoretype PKCS12 \
+        -destkeystore arm.jks \
+        -deststoretype JKS
+
+# jks
+keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "storepassword" -keypass "keypassword" -alias "default" -dname "CN=127.0.0.1, OU=MyOrgUnit, O=MyOrg, L=MyCity, S=MyRegion, C=MyCountry"
 ```
 
 ### Libs
@@ -65,3 +74,5 @@ keytool -genkeypair -keystore arm.p12 -storetype PKCS12 -storepass MY_PASSWORD -
 https://dzone.com/articles/sample-java-web-socket-client
 
 https://www.delftstack.com/howto/java/websocket-client-java/#then-we-need-to-create-a-clientmanager-and-ask-it-to-connect-to-the-annotated-endpoint-which-is-our-client-the-uri-will-specify-the-server
+
+https://code.yawk.at/org.glassfish.grizzly/grizzly-websockets/3.0.0/org/glassfish/grizzly/websockets/
