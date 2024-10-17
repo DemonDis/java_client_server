@@ -21,6 +21,8 @@ java -cp ".jar:lib/*" MetricTest.java
 javac -cp ".jar:lib/*" MetricTest.java
 # run
 java MetricTest
+# ssl debug
+java -cp ".jar:lib/*" MetricTest.java -Djavax.net.debug=ssl
 ```
 s
 ## Structure
@@ -57,7 +59,7 @@ keytool -importkeystore -srckeystore arm.p12 \
         -deststoretype JKS
 
 # jks
-keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "storepassword" -keypass "keypassword" -alias "default" -dname "CN=127.0.0.1, OU=MyOrgUnit, O=MyOrg, L=MyCity, S=MyRegion, C=MyCountry"
+keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "MY_PASSWORD" -keypass "keypassword" -alias "default" -dname "CN=127.0.0.1, OU=MyOrgUnit, O=MyOrg, L=MyCity, S=MyRegion, C=MyCountry"
 ```
 
 ### Libs
@@ -78,3 +80,19 @@ keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "
 - [Mutual TLS client and server in NodeJS](https://github.com/BenEdridge/mutual-tls)
 - [Mineria](https://github.com/AlejandroCovarrubias/Mineria)
 - [Java WebSockets](https://github.com/TooTallNate/Java-WebSocket)
+
+#### Stack
+- [javax.websocket client simple example](https://stackoverflow.com/questions/26452903/javax-websocket-client-simple-example)
+- [tyrus websocket ssl handshake has failed](https://stackoverflow.com/questions/42051411/tyrus-websocket-ssl-handshake-has-failed)
+- [how to add .crt file to keystore and trust store](https://stackoverflow.com/questions/57453154/how-to-add-crt-file-to-keystore-and-trust-store)
+
+##### Ошибки
+```
+javax.websocket.DeploymentException: SSL handshake has failed
+
+Caused by: javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+
+Caused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+
+Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+```

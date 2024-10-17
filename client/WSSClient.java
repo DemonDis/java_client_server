@@ -25,20 +25,16 @@ public class WSSClient {
 
    public static void main(String[] args) {
       String socketUrl = "wss://localhost:8080/wss/v1";
+      // String socketUrl = "wss://echo.websocket.org";
       WebSocketContainer container=null;
       Session session=null;
       
       try {
-
-
          ClientManager client = ClientManager.createClient();
-
-         //System.getProperties().put("javax.net.debug", "all"); // Useful for debugging SSL interaction
-         // The keystore in the next two lines is the same keystore you used for running the server,
-         // likely in ${jetty.base}/etc/keystore
-         System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "./arm.jks");
-         System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "./arm.jks");
-         // The following two passwords are what you used for your self-signed cert
+         
+         // System.getProperties().put("javax.net.debug", "all");
+         System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "./keystore/arm.jks");
+         System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "./keystore/arm.jks");
          System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "MY_PASSWORD");
          System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "MY_PASSWORD");
          final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
@@ -48,14 +44,9 @@ public class WSSClient {
 
          SSLEngineConfigurator sslEngineConfigurator = new SSLEngineConfigurator(defaultConfig, true, false, false);
          client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
-         client.connectToServer(WSSClient.class ,  new URI("wss://localhost:8080/wss/v1"));
+         client.connectToServer(WSSClient.class ,  new URI(socketUrl));
          System.out.println ("Connected .... ");
 
-
-
-         // container = ContainerProvider.getWebSocketContainer(); 
-         // session=container.connectToServer(WSSClient.class, URI.create(socketUrl)); 
-         
          wait4TerminateSignal();
       } catch (Exception e) { e.printStackTrace(); }
       finally  {
