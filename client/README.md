@@ -70,9 +70,11 @@ keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)
 2. [Interface JsonObject](https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html)
 3. [Java Classpath](https://howtodoinjava.com/java/basics/java-classpath/)
+4. [Building a Samlple Java WebSocket Client](https://dzone.com/articles/sample-java-web-socket-client)
+5. [WebSocket Client in Java](https://www.delftstack.com/howto/java/websocket-client-java/#then-we-need-to-create-a-clientmanager-and-ask-it-to-connect-to-the-annotated-endpoint-which-is-our-client-the-uri-will-specify-the-server)
 
-https://dzone.com/articles/sample-java-web-socket-client
-
-https://www.delftstack.com/howto/java/websocket-client-java/#then-we-need-to-create-a-clientmanager-and-ask-it-to-connect-to-the-annotated-endpoint-which-is-our-client-the-uri-will-specify-the-server
-
-https://code.yawk.at/org.glassfish.grizzly/grizzly-websockets/3.0.0/org/glassfish/grizzly/websockets/
+#### Example
+- [TLS Client-Server Example in Java](https://github.com/mortensen/tls-client-server-example)
+- [Mutual TLS client and server in NodeJS](https://github.com/BenEdridge/mutual-tls)
+- [Mineria](https://github.com/AlejandroCovarrubias/Mineria)
+- [Java WebSockets](https://github.com/TooTallNate/Java-WebSocket)
