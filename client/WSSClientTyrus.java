@@ -8,7 +8,7 @@ import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 
 @ClientEndpoint
-public class WSSClient {
+public class WSSClientTyrus extends Endpoint  {
    private static Object waitLock = new Object();
 
    @OnMessage
@@ -44,7 +44,7 @@ public class WSSClient {
 
          SSLEngineConfigurator sslEngineConfigurator = new SSLEngineConfigurator(defaultConfig, true, false, false);
          client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
-         client.connectToServer(WSSClient.class ,  new URI(socketUrl));
+         client.connectToServer(WSSClientTyrus.class ,  new URI(socketUrl));
          System.out.println ("Connected .... ");
 
          wait4TerminateSignal();

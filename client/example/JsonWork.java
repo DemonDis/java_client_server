@@ -6,7 +6,7 @@ import java.io.Reader;
 
 import javax.json.*;
 
-public class Example {
+public class JsonWork {
 
     public static void main(String[] args) throws Exception {
         InputStream fis = new FileInputStream("person.json");

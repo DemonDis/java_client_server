@@ -50,8 +50,8 @@ s
 ├── ☕ HttpClientTest.java      # Запрос по http
 ├── ☕ HttpsClientTest.java     # Запрос по https (с отлюкчением  ssl)
 ├── ☕ WSClient.java            # Запрос по ws
-├── ☕ WSSClient.java           # Запрос по wss (в работе)
-└── ☕ WSSClientJetty.java      # Запрос по wss (с отлюкчением  ssl) JETTY (eclipse)
+├── ☕ WSSClientJetty.java      # Запрос по wss (с отлюкчением  ssl) JETTY (eclipse)
+└── ☕ WSSClientTyrus.java      # Запрос по wss (в работе) TYRUS
 ```
 
 ## Generate keys
