@@ -14,9 +14,10 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', function connection(ws) {
   ws.on('error', console.error);
-
+  ws.send('OPEN SOCKET!');
   ws.on('message', function message(msg) {
     console.log(msg.toString());
+
   });
 });
 

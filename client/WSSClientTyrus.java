@@ -8,7 +8,7 @@ import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 
 @ClientEndpoint
-public class WSSClientTyrus extends Endpoint  {
+public class WSSClientTyrus {
    private static Object waitLock = new Object();
 
    @OnMessage
@@ -24,6 +24,7 @@ public class WSSClientTyrus extends Endpoint  {
    }
 
    public static void main(String[] args) {
+      // String socketUrl = "ws://localhost:8081";
       String socketUrl = "wss://localhost:8080/wss/v1";
       // String socketUrl = "wss://echo.websocket.org";
       WebSocketContainer container=null;

@@ -20,4 +20,4 @@ wss.on("connection", ws => {
         console.log("Some Error occurred")
     }
 });
-console.log("The WebSocket server is running on ws://localhost:8080");
+console.log("The WebSocket server is running on ws://localhost:8081");
