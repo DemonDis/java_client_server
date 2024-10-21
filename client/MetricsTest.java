@@ -94,6 +94,7 @@ public class MetricsTest {
 
         System.out.println("\n" + obj + "\n");
 
+        // ----- SOCKET
         String url_socket = "wss://localhost:8080/wss/v1";
 
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
@@ -109,16 +110,20 @@ public class MetricsTest {
             MetricsTest socket = new MetricsTest();
             Future<Session> fut = client.connect(socket, URI.create(url_socket));
             Session session = fut.get();
-            session.getRemote().sendString("Hello");
-            session.getRemote().sendString("155-questions-active");
+            session.getRemote().sendString("{'name': 'Tor'}");
+            session.getRemote().sendString("{'name': 'Tor 2'}");
+            session.getRemote().sendString("{'name': 'Tor 3'}");
+            session.getRemote().sendString("{'name': 'Tor 4'}");
+            session.close();
         }
         catch (Throwable t) {
             LOG.warn(t);
         }
     }
+    // ----- SOCKET
     @OnWebSocketConnect
     public void onConnect(Session sess) {
-        // LOG.info("onConnect({})", sess);
+        LOG.info("onConnect({})", sess);
     }
 
     @OnWebSocketClose
@@ -135,6 +140,7 @@ public class MetricsTest {
     public void onMessage(String msg) {
         LOG.info("onMessage() - {}", msg);
     }
+    // ----- SOCKET
 }
 
 
