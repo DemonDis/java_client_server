@@ -11,20 +11,26 @@ echo ${CLASSPATH}
 export CLASSPATH=.:/javax.json-api-1.1.4.jar
 ```
 
-## Run
+## Run UNIX (:)
 ```bash
 # only lib
 java -cp javax.json-api-1.1.4.jar WSSClientJetty.java
 # all libs
-java -cp ".jar:lib/*" WSSClientJetty.java
+java -cp ".jar:libJetty/*" WSSClientJetty.java
 # or
-javac -cp ".jar:lib/*" WSSClientJetty.java
+javac -cp ".jar:libJetty/*" WSSClientJetty.java
 # run
 java WSSClientJetty
 # ssl debug
-java -cp ".jar:lib/*" WSSClientJetty.java -Djavax.net.debug=ssl
+java -cp ".jar:libJetty/*" WSSClientJetty.java -Djavax.net.debug=ssl
 ```
-s
+
+## Run WINDOWS (;)
+```bash
+java -cp ".jar;libJetty/*" WSSClientJetty.java
+```
+
+
 ## Structure
 ```
 📁 client/

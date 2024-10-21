@@ -9,6 +9,7 @@
       "nodemon": "^3.1.7",
       "body-parser": "^1.20.3",
       "cors": "^2.8.5",
-      "websocket": "1.0.35"
+      "websocket": "1.0.35", 
+      "ws": "8.18.0"
     }
   }

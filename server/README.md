@@ -15,6 +15,7 @@ nodemon app_socket_tsl.js
 ```
 
 ## Generate keys
+[Install openssl windows](https://ultahost.com/knowledge-base/install-openssl-on-windows/)
 ```bash
 # private key
 openssl genrsa -out key.pem
