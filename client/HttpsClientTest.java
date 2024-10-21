@@ -22,19 +22,8 @@ import javax.json.*;
 Файл: MetricTest.java
 Описание: Метрики отклика арі
 * Права (Copyright): (C) 2024
-* @author Di @since 10.10.2024
+* @author Di @since 21.10.2024
 */
-
-// class TrustAllCertificates implements X509TrustManager
-// {
-//     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-//         return null;
-//     }
-//     public void checkClientTrusted(X509Certificate[] certs, String authType) {
-//     }
-//     public void checkServerTrusted(X509Certificate[] certs, String authType) {
-//     }
-// }
 
 public class HttpsClientTest {
     static String url_s = "https://localhost:4500";

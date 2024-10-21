@@ -14,22 +14,19 @@ export CLASSPATH=.:/javax.json-api-1.1.4.jar
 ## Run UNIX (:)
 ```bash
 # only lib
-java -cp javax.json-api-1.1.4.jar WSSClientJetty.java
+java -cp javax.json-api-1.1.4.jar MetricsTest.java.java
 # all libs
-java -cp ".jar:libJetty/*" WSSClientJetty.java
+java -cp ".jar:libs/*" MetricsTest.java.java
 # or
-javac -cp ".jar:libJetty/*" WSSClientJetty.java
+javac -cp ".jar:libs/*" MetricsTest.java.java
 # run
-java WSSClientJetty
-# ssl debug
-java -cp ".jar:libJetty/*" WSSClientJetty.java -Djavax.net.debug=ssl
+java MetricsTest.java
 ```
 
 ## Run WINDOWS (;)
 ```bash
-java -cp ".jar;libJetty/*" WSSClientJetty.java
+java -cp ".jar;libs/*" MetricsTest.java.java
 ```
-
 
 ## Structure
 ```
@@ -74,13 +71,8 @@ keytool -importkeystore -srckeystore arm.p12 \
 keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "MY_PASSWORD" -keypass "keypassword" -alias "default" -dname "CN=127.0.0.1, OU=MyOrgUnit, O=MyOrg, L=MyCity, S=MyRegion, C=MyCountry"
 ```
 
-### Libs **[TYRUS](https://mvnrepository.com/search?q=tyrus)**
+### Libs
 1. javax.json-api-1.1.4.jar
-2. javax.json-1.1.4.jar
-3. javax.websocket-client-api-1.1.jar
-4. tyrus-standalone-client-1.9.jar
-
-### Libs **[JETTY](https://mvnrepository.com/artifact/org.eclipse.jetty)** 
 1. jetty-client-9.3.6.v20151106.jar
 2. jetty-io-9.3.6.v20151106.jar
 3. jetty-util-9.3.6.v20151106.jar
@@ -109,14 +101,3 @@ keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "
 - [how to add .crt file to keystore and trust store](https://stackoverflow.com/questions/57453154/how-to-add-crt-file-to-keystore-and-trust-store)
 - [Can't find Jetty WebSocket classes after adding the libraries in classpath](https://stackoverflow.com/questions/17956357/cant-find-jetty-websocket-classes-after-adding-the-libraries-in-classpath)
 - [Connecting to a secured websocket](https://stackoverflow.com/questions/29189197/connecting-to-a-secured-websocket)
-
-##### Ошибки **Tyrus**
-```
-javax.websocket.DeploymentException: SSL handshake has failed
-
-Caused by: javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
-
-Caused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
-
-Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
-```
