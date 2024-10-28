@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.route('/')
   .post((req, res) => {
     console.log('Client прислал', req.query);
-    res.send({'token': '4500'});
+    res.send({'token': '4501'});
   })
 
 
@@ -27,6 +27,6 @@ const httpsServer = https.createServer({
   cert: fs.readFileSync('src/credentials/cert.pem'),
 }, app);  
 
-httpsServer.listen(4500, () => {
-    console.log('HTTPS Server running on port 4500');
+httpsServer.listen(4501, () => {
+    console.log('HTTPS Server running on port 4501');
 });

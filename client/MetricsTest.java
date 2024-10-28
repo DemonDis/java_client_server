@@ -115,6 +115,7 @@ public class MetricsTest {
             session.getRemote().sendString("{'name': 'Tor 3'}");
             session.getRemote().sendString("{'name': 'Tor 4'}");
             session.close();
+            
         }
         catch (Throwable t) {
             LOG.warn(t);

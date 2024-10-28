@@ -17,6 +17,7 @@ app.get('/', function (req, res) {
 
 app.route('/article')
 .get(function(req, res) {
+    console.log('Client прислал', req.query);
     res.send('Get the article');
 })
 .post(function(req, res) {
