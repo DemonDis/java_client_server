@@ -55,6 +55,9 @@ public class TestThread {
         SendTest sendtest2 = new SendTest("Пахан", url_send2);
         Thread sendtest_2 = new Thread(sendtest2);
         sendtest_2.start();
+
+        System.out.println(sendtest_1.getName());
+
     }
 }
 
@@ -117,7 +120,7 @@ class SendHttps {
 @WebSocket
 public class SendSocket {
     private static final Logger LOG = Log.getLogger(SendSocket.class);
-    public void send() {
+    public void send(String threadNumber) {
         String url_socket = "wss://localhost:8080/wss/v1";
 
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
@@ -160,8 +163,8 @@ public class SendSocket {
     }
 
     @OnWebSocketMessage
-    public void onMessage(String msg) {
-        LOG.info("onMessage() - {}", msg);
+    public void onMessage(String msg, String threadNumber) {
+        LOG.info("onMessage() - {}", msg , threadNumber);
     }
 }
 
