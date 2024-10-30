@@ -5,27 +5,31 @@ java -version
 java version "17.0.12" 2024-07-16 LTS
 ```
 
-## Echo
+## Echo CLASSPATH
 ```bash
 echo ${CLASSPATH}
 export CLASSPATH=.:/javax.json-api-1.1.4.jar
 ```
 
+## CLASSPATH local libs
+```bash
+# .zshrc
+export CLASSPATH=.:$CLASSPATH:~/java_client_serever/client/.jar:libs/*
+```
+
 ## Run UNIX (:)
 ```bash
-# only lib
-java -cp javax.json-api-1.1.4.jar MetricsTest.java.java
-# all libs
-java -cp ".jar:libs/*" MetricsTest.java.java
-# or
-javac -cp ".jar:libs/*" MetricsTest.java.java
+# compiler javac
+javac -cp ".:.jar:libs/*" Metric.java
 # run
 java MetricsTest.java
 ```
 
 ## Run WINDOWS (;)
 ```bash
-java -cp ".jar;libs/*" MetricsTest.java.java
+java -cp ".:.jar;libs/*" MetricsTest.java
+# run
+java MetricsTest.java
 ```
 
 ## Structure
@@ -33,9 +37,6 @@ java -cp ".jar;libs/*" MetricsTest.java.java
 📁 client/
 ├── 📁 example/
 |   └── ...
-├── 📁 keystore/
-|   ├── 🔑 arm.jks
-|   └── 🔑 arm.p12
 ├── 📁 lib/
 |   ├── ☕ javax.json-1.1.4.jar
 |   ├── ☕ javax.json-api-1.1.4.jar
@@ -72,15 +73,17 @@ keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "
 ```
 
 ### Libs
-1. javax.json-api-1.1.4.jar
-1. jetty-client-9.3.6.v20151106.jar
-2. jetty-io-9.3.6.v20151106.jar
-3. jetty-util-9.3.6.v20151106.jar
-4. websocket-api-9.3.6.v20151106.jar
-5. websocket-client-9.3.6.v20151106.jar
-6. websocket-common-9.3.6.v20151106.jar
-7. websocket-server-9.3.6.v20151106.jar
-8. websocket-servlet-9.3.6.v20151106.jar
+1. javax.json-1.1.4.jar
+2. javax.json-api-1.1.4.jar
+3. jetty-client-9.3.6.v20151106.jar
+4. jetty-http-9.4.44.v20210927.jar
+5. jetty-io-9.3.6.v20151106.jar
+6. jetty-util-9.3.6.v20151106.jar
+7. websocket-api-9.3.6.vs20151106.jar
+8. websocket-client-9.3.6.v20151106.jar
+9. websocket-common-9.3.6.v20151106.jar
+10. websocket-server-9.3.6.v20151106.jar
+11. websocket-servlet-9.3.6.v20151106.jar
 
 #### Info
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)

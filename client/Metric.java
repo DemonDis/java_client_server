@@ -43,25 +43,15 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 import java.security.cert.X509Certificate;
 
-public class MetricTest {
+public class Metric {
+    static String url_send = "https://localhost:4500";
+    static String url_send2 = "https://localhost:4501";
     public static void main(String[] args) {
-        ThreadReq threadReq1 = new ThreadReq("login_1");
-        Thread thread1 = new Thread(threadReq1);
-        thread1.start();
+
+        Send sendtest2 = new Send("Вася", url_send);
+        Thread sendtest_2 = new Thread(sendtest2);
+        sendtest_2.start();
+
+        // System.out.println(sendtest_1.getName());
     }
 }
-
-class ThreadReq implements Runnable {
-    private String name;
-    public ThreadReq(String name) { this.name = name; }
-    // private Exception ex;
-
-    public void run()  {
-        System.out.println("!!!!!");
-        // try {
-
-        // } catch (Exception e) { synchronized(this) { this.ex = ex; } }
-    }
-    // public synchronized Exception getException() { return ex; }
-}
-

@@ -1,9 +1,2 @@
-node_modules
-
-# env
-.env.dev
-
-# pem 
-certificate/
-
-./keystore
+# class java
+*.class
