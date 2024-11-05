@@ -1,4 +1,4 @@
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="html"/>
 
   <xsl:variable name="allResults" select="document(/list/entry/@name)//metric" />
@@ -29,9 +29,17 @@
               <tbody>
                 <tr>
                     <td><xsl:value-of select="$name"/></td>
-                    <td><xsl:value-of select="count($allResults[@testName = $name][@outcome = 'Passed'])"/></td>
-                    <td><xsl:value-of select="count($allResults[@testName = $name][@outcome = 'Failed'])"/></td>
-                    <td><xsl:value-of select="count($allResults[@testName = $name][@outcome = 'Failed'])"/></td>
+                    <td>
+                        <xsl:value-of select="sum($allResults[@reqiest = $name]//time)" />
+                    </td>
+                    <td>
+                      <xsl:value-of select="count($allResults[@reqiest = $name])"/>
+                    </td>
+                    <td>
+                      <!-- <xsl:for-each select="$allResults[@reqiest = $name]"> -->
+                        <xsl:value-of select="sum($allResults[@reqiest = $name]//time) div count($allResults[@reqiest = $name])"/>
+                      <!-- </xsl:for-each> -->
+                    </td>
                 </tr>
               </tbody>
             </table>
