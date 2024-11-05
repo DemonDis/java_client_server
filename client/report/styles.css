@@ -1,0 +1,260 @@
+/* https://codepen.io/Blind3y3Design/pen/poGdqGb */
+
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+
+:root {
+	--color-white: #fff;
+	--color-black: #000;
+
+	--color-blue: #87ceeb;
+	--color-blue-muted: #a7dbd8;
+	--color-green: #90ee90;
+	--color-green-muted: #bafca2;
+	--color-yellow: #f4d738;
+	--color-yellow-muted: #ffdb58;
+	--color-red: #ff7a5c;
+	--color-red-muted: #ffa070;
+	--color-pink: #ffb2ef;
+	--color-pink-muted: #ffc0cb;
+	--color-purple: #a388ee;
+	--color-purple-muted: #c4a1ff;
+
+	--space-base: 8px;
+	--space-1: calc(var(--space-base) * 1);
+	--space-2: calc(var(--space-base) * 2);
+	--space-3: calc(var(--space-base) * 3);
+	--space-4: calc(var(--space-base) * 4);
+	--space-5: calc(var(--space-base) * 5);
+
+	--background-body: #fafafa;
+	--background-dashboard: #fff9f2;
+
+	--text-display: "Space Grotesk";
+	--text-body: "Public Sans";
+
+	--font-size-sm: clamp(0.8rem, 0.07vw + 0.78rem, 0.84rem);
+	--font-size-base: clamp(1rem, 0.2vw + 0.95rem, 1.13rem);
+	--font-size-md: clamp(1.25rem, 0.4vw + 1.15rem, 1.5rem);
+	--font-size-lg: clamp(1.56rem, 0.7vw + 1.39rem, 2rem);
+	--font-size-xl: clamp(1.95rem, 1.14vw + 1.67rem, 2.66rem);
+	--font-size-xxl: clamp(2.44rem, 1.78vw + 2rem, 3.55rem);
+	--font-size-xxxl: clamp(3.05rem, 2.69vw + 2.38rem, 4.73rem);
+
+	--brutal-border: 3px solid var(--color-black);
+	--brutal-shadow-1: 6px 6px 0 0 var(--color-black);
+	--brutal-shadow-2: 10px 10px 0 -3px var(--color-white),
+		10px 10px var(--color-black);
+}
+
+body {
+	font-family: var(--text-body);
+	font-size: var(--font-size-md);
+	background: var(--background-body);
+}
+
+h2,
+p {
+	margin: 0;
+}
+
+h2 {
+	font-family: var(--text-display);
+	line-height: 1.2;
+}
+
+p {
+	line-height: 1.4;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--space-2);
+}
+
+li {
+	background: var(--color-white);
+	border: var(--brutal-border);
+	display: flex;
+	font-size: var(--font-size-base);
+	padding: var(--space-1);
+	transition: all 0.25s ease-in-out;
+
+	&:hover {
+		box-shadow: var(--brutal-shadow-1);
+		transform: translate(-3px, -3px);
+	}
+}
+
+.dashboard {
+	background: var(--background-dashboard);
+	border: var(--brutal-border);
+	box-shadow: var(--brutal-shadow-1);
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--space-4);
+	padding: var(--space-2) calc(var(--space-2) + 10px) calc(var(--space-2) + 10px)
+		var(--space-2);
+	margin: 0 auto;
+	max-width: 1400px;
+
+	@media (min-width: 1024px) {
+		gap: var(--space-4);
+		grid-template-columns: repeat(8, 1fr);
+		grid-template-rows: repeat(3, auto);
+	}
+}
+
+.profile {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+
+	@media (min-width: 1024px) {
+		grid-column: 1/6;
+		grid-row: 1;
+	}
+
+	h2 {
+		font-size: var(--font-size-xxl);
+		font-weight: bold;
+	}
+}
+
+.schedule-table,
+.exercise-table {
+	background: var(--color-white);
+	border: var(--brutal-border);
+	box-shadow: 10px 10px 0 -3px var(--color-yellow), 10px 10px var(--color-black);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	padding: var(--space-2);
+
+	h2 {
+		font-size: var(--font-size-l);
+	}
+
+	table,
+	th,
+	td {
+		border: var(--brutal-border);
+		border-collapse: collapse;
+	}
+
+	th,
+	td {
+		padding: 4px;
+		font-size: var(--font-size-base);
+	}
+
+	tr:hover {
+		background: var(--color-blue-muted);
+	}
+
+	th:first-child {
+		background: var(--color-pink-muted);
+	}
+	th:nth-child(2) {
+		background: var(--color-green-muted);
+	}
+	th:nth-child(3) {
+		background: var(--color-purple-muted);
+	}
+}
+
+.schedule-table {
+	@media (min-width: 1024px) {
+		grid-column: span 4;
+		grid-row: 2;
+	}
+}
+.exercise-table {
+	@media (min-width: 1024px) {
+		grid-column: span 2;
+		grid-row: 2;
+	}
+}
+
+.calories,
+.personal-bests,
+.challenges {
+	--color-inner-shadow: var(--color-white);
+
+	background: var(--color-white);
+	border: var(--brutal-border);
+	box-shadow: 10px 10px 0 -3px var(--color-inner-shadow),
+		10px 10px var(--color-black);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	padding: var(--space-1);
+
+	@media (min-width: 1024px) {
+		grid-column: span 2;
+		grid-row: 3;
+	}
+
+	ul {
+		gap: var(--space-1);
+	}
+}
+
+.calories {
+	--color-inner-shadow: var(--color-red);
+
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+
+	h2 {
+		grid-column: span 3;
+	}
+
+	div {
+		align-items: center;
+		border: var(--brutal-border);
+		display: grid;
+		padding: 4px;
+	}
+
+	@media (min-width: 1024px) {
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: auto auto 1fr;
+
+		h2 {
+			grid-column: span 2;
+		}
+
+		div:first-of-type {
+			align-items: center;
+			grid-column: span 2;
+			grid-template-columns: auto auto;
+			justify-content: space-between;
+			padding: var(--space-1);
+		}
+	}
+}
+
+.personal-bests {
+	background: var(--color-green);
+}
+
+.challenges {
+	--color-inner-shadow: var(--color-purple);
+}
+
+								.activity-feed {
+									background: var(--color-blue-muted);
+									border: var(--brutal-border);
+									box-shadow: 10px 10px 0 -3px var(--color-blue), 10px 10px var(--color-black);
+									display: flex;
+									flex-direction: column;
+									gap: var(--space-2);
+									padding: 16px;
+
+									@media (min-width: 1024px) {
+										grid-column: 7 / span 2;
+										grid-row: 1 / span 3;
+									}
+								}

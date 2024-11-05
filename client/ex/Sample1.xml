@@ -1,0 +1,8 @@
+<?xml-stylesheet type="text/xsl" href="merge_2.xsl"?>
+<rootNode>
+    <header>
+        <title agg="sum">1</title>
+        <records agg="sum">10</records>
+        <number agg="min">5</number>
+    </header>
+</rootNode>

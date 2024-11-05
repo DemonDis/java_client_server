@@ -1,0 +1,7 @@
+<rootNode>
+    <header>
+        <title agg="sum">2</title>
+        <records agg="sum">20</records>
+        <number agg="min">15</number>
+    </header>
+</rootNode>
