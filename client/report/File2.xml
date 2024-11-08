@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metrics>
     <metric reqiest="reqiest_1">
-        <time>2</time>
+        <time>1</time>
     </metric>
     <metric reqiest="reqiest_2">
         <time>4</time>

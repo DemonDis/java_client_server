@@ -9,4 +9,7 @@
     <metric reqiest="reqiest_3">
         <time>3</time>
     </metric>
+    <metric reqiest="reqiest_4">
+        <time>3</time>
+    </metric>
 </metrics>
