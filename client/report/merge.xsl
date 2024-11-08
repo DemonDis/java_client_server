@@ -8,7 +8,7 @@
     <xsl:variable name="name" select="'reqiest_1'" />
     <html>
       <head>
-        <link rel="stylesheet" type="text/css" href="styles_2.css" />
+        <link rel="stylesheet" type="text/css" href="styles.css" />
       </head>
       <body>
         <div class="dashboard">
@@ -32,15 +32,13 @@
                 <xsl:for-each select="$allResults">
                   <xsl:sort select="@reqiest"/>
                   <xsl:variable name="pos" select="position(  )"/>
-                  <xsl:if test="$pos = 1 or @reqiest != $allResults[$pos - 1]/@reqiest">
+                  <xsl:if test="$pos = 1 or @reqiest != $allResults[$pos + 6]/@reqiest">
                     <xsl:variable name="table" select='$allResults[$pos]/@reqiest' />
                     <tr>
-                      <td><xsl:value-of select="$table" /></td>
+                      <td><xsl:value-of select="$table"/></td>
                       <td><xsl:value-of select="count($allResults[@reqiest = $table])"/></td>
-                          <td><xsl:value-of select="sum($allResults[@reqiest = $table]//time)"/></td>
-                      <td>
-                          <xsl:value-of select="sum($allResults[@reqiest = $table]//time) div count($allResults[@reqiest = $table])"/>
-                      </td>
+                      <td><xsl:value-of select="sum($allResults[@reqiest = $table]//time)"/></td>
+                      <td><xsl:value-of select="sum($allResults[@reqiest = $table]//time) div count($allResults[@reqiest = $table])"/></td>
                       <td>
                         <xsl:for-each select="$allResults[@reqiest = $table]//time">
                           <xsl:sort select="." data-type="number" order="descending"/>

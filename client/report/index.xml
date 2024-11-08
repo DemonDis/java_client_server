@@ -3,4 +3,5 @@
 <list url="ws://localhost:8081" date="05.11.2024, 20:00:00">
     <entry name="File1.xml" />
     <entry name="File2.xml" />
+    <entry name="File3.xml" />
 </list>
