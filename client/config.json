@@ -1,0 +1,35 @@
+{
+    "url" : "localhost:6060",
+    "request": [
+        {
+            "request_name" : "Запрос 1",
+            "name": "send:req_1",
+            "body": "{\"send_request\":\"Отправили запрос № 1\", \"request_type\":\"{}\", \"send\":\"%s\"}",
+            "timeout": 1000
+        },
+        {
+            "request_name" : "Запрос 1",
+            "name": "send:req_2",
+            "body": "{\"send_request\":\"Отправили запрос № 2\", \"request_type\":\"{}\", \"send\":\"%s\"}",
+            "timeout": 5000
+        },
+        {
+            "request_name" : "Запрос 1",
+            "name": "send:req_3",
+            "body": "{\"send_request\":\"Отправили запрос № 2\", \"request_type\":\"{}\", \"send\":\"%s\"}",
+            "timeout": 3000
+        }
+    ],
+    "users": [
+        "user_1",
+        "user_2",
+        "user_3",
+        "user_4",
+        "user_5",
+        "user_6",
+        "user_7",
+        "user_8",
+        "user_9",
+        "user_10"
+    ]
+}
