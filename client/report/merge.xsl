@@ -3,9 +3,8 @@
   <xsl:strip-space elements="*"/>
 
   <xsl:variable name="allResults" select="document(/list/entry/@name)//metric" />
-  <xsl:variable name="allResults_" select="document(/list/entry/@name)" />
-  <xsl:variable name="all_request" select="document('list_request.xml')/list/url/@name" />
-
+  <xsl:variable name="request" select="document('list_request.xml')/list/url/@name" />
+  
   <xsl:template match="/">
     <xsl:variable name="name" select="'reqiest_1'" />
     <html>
@@ -25,26 +24,19 @@
                 <tr bgcolor="#9acd32">
                     <th>Наименование запроса</th>
                     <th>Количество пользователей</th>
-                    <th>Сумма секунд</th>
-                    <th>Среднее значение</th>
-                    <th>Максимальное значение</th>
+                    <th>Среднее значение (сек.)</th>
+                    <th>Максимальное допустимое значение (сек.)</th>
                 </tr>
               </thead>
               <tbody>
-                <xsl:for-each select="$all_request">
+                <xsl:for-each select="$request">
                   <xsl:variable name="pos" select="position(  )"/>
                     <xsl:variable name="table" select='$allResults[$pos]/@reqiest' />
                     <tr>
-                      <td><xsl:value-of select="$allResults[@reqiest = $all_request[$pos]]/@reqiest"/></td>
-                      <td><xsl:value-of select="count($allResults[@reqiest = $all_request[$pos]])"/></td>
-                      <td><xsl:value-of select="sum($allResults[@reqiest = $all_request[$pos]])"/></td>
-                      <td><xsl:value-of select="sum($allResults[@reqiest = $all_request[$pos]]) div count($allResults[@reqiest = $all_request[$pos]])"/></td>
-                      <td>
-                        <xsl:for-each select="$allResults[@reqiest = $all_request[$pos]]//time">
-                          <xsl:sort select="." data-type="number" order="descending"/>
-                          <xsl:if test="position() = 1"><xsl:value-of select="."/></xsl:if>
-                        </xsl:for-each>
-                      </td>
+                      <td><xsl:value-of select="$allResults[@reqiest = $request[$pos]]/@reqiest"/></td>
+                      <td><xsl:value-of select="count($allResults[@reqiest = $request[$pos]])"/></td>
+                      <td><xsl:value-of select="sum($allResults[@reqiest = $request[$pos]]) div count($allResults[@reqiest = $request[$pos]])"/></td>
+                      <td><xsl:value-of select="$allResults[@reqiest = $request[$pos]]/time/@max_time"/></td>
                     </tr>
                 </xsl:for-each>
               </tbody>

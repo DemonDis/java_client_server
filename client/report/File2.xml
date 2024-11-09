@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metrics>
     <metric reqiest="reqiest_1">
-        <time>1</time>
+        <time max_time="1">1</time>
     </metric>
     <metric reqiest="reqiest_2">
-        <time>4</time>
+        <time max_time="1">1</time>
     </metric>
     <metric reqiest="reqiest_3">
-        <time>3</time>
+        <time max_time="1">1</time>
     </metric>
 </metrics>
