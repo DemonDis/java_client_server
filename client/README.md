@@ -24,6 +24,16 @@ export CLASSPATH=.:/javax.json-api-1.1.4.jar
 export CLASSPATH=.:$CLASSPATH:~/java_client_serever/client/.jar:libs/*
 ```
 
+## Build (jar)
+```bash
+# java
+javac Metric.java
+# MANIFEST
+jar cmvf META-INF/MANIFEST.MF Metric.jar Metric.class Send.class SendHttps.class SendHttps$1.class SendHttps$2.class
+# run
+java -jar Metric.jar
+```
+
 ## Run UNIX (:)
 ```bash
 # remove class
@@ -31,7 +41,7 @@ rm -f *.class
 # compiler javac
 javac -cp ".:.jar:libs/*" Metric.java
 # run
-java MetricsTest.java
+java Metric.java
 ```
 
 ## Run WINDOWS (;)

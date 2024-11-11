@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: libs/javax.json-1.1.4.jar libs/javax.json-api-1.1.4.jar
+Main-Class: Metric
+Built-By: Di

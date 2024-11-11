@@ -7,9 +7,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <groupId>innovation_lab</groupId>
+    <groupId>lab.innovation</groupId>
     <artifactId>metrics</artifactId>
-    <version>1.0</version>
+	<version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

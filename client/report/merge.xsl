@@ -6,7 +6,7 @@
   <xsl:variable name="request" select="document('list_request.xml')/list/url/@name" />
   
   <xsl:template match="/">
-    <xsl:variable name="name" select="'reqiest_1'" />
+    <xsl:variable name="name" select="'request_1'" />
     <html>
       <head>
         <link rel="stylesheet" type="text/css" href="styles.css" />
@@ -31,12 +31,12 @@
               <tbody>
                 <xsl:for-each select="$request">
                   <xsl:variable name="pos" select="position(  )"/>
-                    <xsl:variable name="table" select='$allResults[$pos]/@reqiest' />
+                    <xsl:variable name="table" select='$allResults[$pos]/@request' />
                     <tr>
-                      <td><xsl:value-of select="$allResults[@reqiest = $request[$pos]]/@reqiest"/></td>
-                      <td><xsl:value-of select="count($allResults[@reqiest = $request[$pos]])"/></td>
-                      <td><xsl:value-of select="sum($allResults[@reqiest = $request[$pos]]) div count($allResults[@reqiest = $request[$pos]])"/></td>
-                      <td><xsl:value-of select="$allResults[@reqiest = $request[$pos]]/time/@max_time"/></td>
+                      <td><xsl:value-of select="$allResults[@request = $request[$pos]]/@request"/></td>
+                      <td><xsl:value-of select="count($allResults[@request = $request[$pos]])"/></td>
+                      <td><xsl:value-of select="sum($allResults[@request = $request[$pos]]) div count($allResults[@request = $request[$pos]])"/></td>
+                      <td><xsl:value-of select="$allResults[@request = $request[$pos]]/time/@max_time"/></td>
                     </tr>
                 </xsl:for-each>
               </tbody>
