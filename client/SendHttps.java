@@ -39,38 +39,38 @@ class SendHttps {
                 }
             };
 
-        //     SSLContext sc = SSLContext.getInstance("SSL");
-        //     sc.init(null, trustAllCerts, new java.security.SecureRandom());
-        //     HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     
-        //     HostnameVerifier allHostsValid = new HostnameVerifier() {
-        //         public boolean verify(String hostname, SSLSession session) {
-        //             return true;
-        //         }
-        //     };
-        //     HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
-            // URL url = new URL(url_send);
-            // HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+            URL url = new URL(url_send);
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 
-            // con.setRequestMethod( "POST" );
-            // con.setRequestProperty("Content-Type", "application/json; utf-8");
-            // con.setConnectTimeout(10000);
-            // con.setDoOutput(true);
-            // con.setDoInput(true);
+            con.setRequestMethod( "POST" );
+            con.setRequestProperty("Content-Type", "application/json; utf-8");
+            con.setConnectTimeout(10000);
+            con.setDoOutput(true);
+            con.setDoInput(true);
 
-            // try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
-            //     writer.write(login.toString());
-            // }
+            try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
+                writer.write(login.toString());
+            }
 
-            // InputStream is = con.getInputStream();
-            // InputStreamReader isr = new InputStreamReader(is);
-            // BufferedReader br = new BufferedReader(isr);
+            InputStream is = con.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
 
-            // JsonReader reader = Json.createReader (br);
-            // JsonObject obj = reader.readObject();
+            JsonReader reader = Json.createReader (br);
+            JsonObject obj = reader.readObject();
 
-            // System.out.println(obj);
+            System.out.println(obj);
         } catch (Exception e) { synchronized(this) { this.ex = ex; } }
     }
 }
