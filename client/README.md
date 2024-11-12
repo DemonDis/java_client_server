@@ -26,29 +26,24 @@ export CLASSPATH=.:$CLASSPATH:~/java_client_serever/client/.jar:libs/*
 
 ## Build (jar)
 ```bash
-# java
+# java compiler class
 javac Metric.java
-# MANIFEST
-jar cmvf META-INF/MANIFEST.MF Metric.jar Metric.class Send.class SendHttps.class SendHttps$1.class SendHttps$2.class
+# build jar
+jar cvf metric.jar *.class
 # run
-java -jar Metric.jar
+java -cp ".:.jar:libs/*:.jar:*" Metric
 ```
 
-## Run UNIX (:)
+## Run project
 ```bash
 # remove class
 rm -f *.class
-# compiler javac
-javac -cp ".:.jar:libs/*" Metric.java
-# run
-java Metric.java
-```
-
-## Run WINDOWS (;)
-```bash
+# compiler javac (WINDOWS) (;)
+java -cp ".:.jar;libs/*" MetricsTest.java
+# compiler javac (UNIX) (:)
 java -cp ".:.jar;libs/*" MetricsTest.java
 # run
-java MetricsTest.java
+java Metric.java
 ```
 
 ## Structure
@@ -76,6 +71,7 @@ java MetricsTest.java
 |   ├── 🎨 styles.css           # Стили для таблицы
 |   └── ...
 ├── 📋 .gitignore
+├── ☕ build.sh                 # Скрипт build .jar
 ├── ☕ Metric.java              # Запуск теста
 ├── ☕ Send.java                # Обращение к https и socket
 ├── ☕ SendHttps.java           # Запрос по https

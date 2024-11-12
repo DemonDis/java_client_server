@@ -8,7 +8,5 @@ public class Send implements Runnable {
     public void run() {
         SendHttps sendHttps = new SendHttps();
         sendHttps.send(url_send);
-        SendSocket sendSocket = new SendSocket();
-        sendSocket.send();
     }
 }
