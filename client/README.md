@@ -1,130 +1,90 @@
-# CLIENT (java)
-
-## Version programm
+# Loader java
+## Version tech stack 
 ```bash
-# java
-java -version
-# version
-java version "17.0.12" 2024-07-16 LTS
-# maven
-mvn -version
-# version
-Apache Maven 3.9.9
+# java -version
+openjdk version "17.0.5" 2022-10-18
+# mvn -version
+Apache Maven 3.9.3 
 ```
 
-## Echo CLASSPATH
+## Запуск 
 ```bash
-echo ${CLASSPATH}
-export CLASSPATH=.:/javax.json-api-1.1.4.jar
+mvn exec:java
 ```
 
-## CLASSPATH local libs
+## Сборка
 ```bash
-# .zshrc
-export CLASSPATH=.:$CLASSPATH:~/java_client_serever/client/.jar:libs/*
+# Maven build
+mvn package
 ```
 
-## Build (jar)
-```bash
-# java compiler class
-javac Metric.java
-# build jar
-jar cvf metric.jar *.class
-# run
-java -cp ".:.jar:libs/*:.jar:*" Metric
+## Структура проекта
+```
+📂 src/main/java/loader/
+├── 📂 logs/                        # Запись логов 🙈
+|   |   └── ...
+├── 📂 report/                      # Запись результатов 🙈
+|   ├── 📙 _conf.json                       # Конфигурационный файл (все запросы и пользователя)
+|   ├── 🧭 _index.xsl                       # Список всех xml users (создается при запуске)
+|   ├── 📉 _merge_.xsl                      # Сборка отчета xslt
+|   ├── 🧭 _request.xsl                     # Список всех xml requst (создается при запуске)
+|   ├── 🧭 user_1_result.xml                # Результаты запуска (создается при запуске)
+|   ├── 🧭 ... .xml                         # ...создается при запуске
+|   └── 💄 styles.css                       # Стилизация отчета
+├── 🙈 .gitignore
+├── ☕ Metric.java                  # Main (запуск теста)
+├── ☕ MetricLog.java               # Logs для отладки (запись в json)
+├── ☕ MetricXml.java               # Создание xml users
+├── ☕ MetricXmlMerge.java          # Создание xml merge
+├── ☕ MetricXmlRequestList.java    # Создание xml request
+├── ☕ HttpsRequest.java            # Запрос и сбор данных https
+├── 📉 pom.xml                      # Для сборки maven
+├── ☕ SocketRequest.java           # Запроc по socket
+└── ☕ TransToHtml.java             # Генерация html
 ```
 
-## Run project
-```bash
-# remove class
-rm -f *.class
-# compiler javac (WINDOWS) (;)
-java -cp ".:.jar;libs/*" MetricsTest.java
-# compiler javac (UNIX) (:)
-java -cp ".:.jar;libs/*" MetricsTest.java
-# run
-java Metric.java
+### Структура отчета в табличной форме (пример)
+| Наименование запроса  | Запрос       | Количество пользователей  | Целевое время отклика (сек.)  | Максимальное время (сек.) | Среднее время отклика (сек.)  |
+|:----------------------|:-------------|:--------------------------|:------------------------------|:--------------------------|:------------------------------|
+| #1 Пользователи       | req:details  | 4                         | 1.5                           | 01                        | 0.5                           |
+
+### Структура отчета xml (примеры)
+#### Прогон по одному пользователю
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="stylesheet.xsl"?>
+<metrics>
+    <metric request="#1 Пользователи" requestName="req:details">
+        <result_time max_time="5">01</result_time>
+    </metric>
+    <metric request="#2 Адресс" requestName="req:adress">
+        <result_time max_time="1.5">01</result_time>
+    </metric>
+</metrics>
+```
+#### Merge всех пользователей
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="_merge_.xsl"?>
+<list date="13.11.2024, 08:17:19" url="10.1.23.44:8080">
+    <entry name="user_1_result.xml"/>
+    <entry name="user_2_result.xml"/>
+    <entry name="user_3_result.xml"/>
+    <entry name="user_4_result.xml"/>
+</list>
+```
+#### Merge всех запросов
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<list>
+    <url name="req:detail"/>
+    <url name="req:adress"/>
+</list>
 ```
 
-## Structure
-```
-📁 client/
-├── 📁 lib/
-|   ├── ☕ javax.json-1.1.4.jar
-|   ├── ☕ javax.json-api-1.1.4.jar
-|   ├── ☕ javax.websocket-client-api-1.1.jar
-|   ├── ☕ jetty-client-9.3.6.v20151106.jar
-|   ├── ☕ jetty-io-9.3.6.v20151106.jar
-|   ├── ☕ jetty-util-9.3.6.v20151106.jar
-|   ├── ☕ tyrus-standalone-client-1.9.jar
-|   ├── ☕ websocket-api-9.3.6.v20151106.jar
-|   ├── ☕ websocket-client-9.3.6.v20151106.jar
-|   ├── ☕ websocket-common-9.3.6.v20151106.jar
-|   ├── ☕ websocket-server-9.3.6.v20151106.jar
-|   └── ☕ websocket-servlet-9.3.6.v20151106.jar
-├── 📁 report/
-|   ├── 📈 File1.xml            # Метрики по пользоватлю
-|   ├── 📈 ... .xml             # 
-|   ├── 📈 index.xml            # Агреция файлов
-|   ├── 📈 list_request.xml     # Сбор все запросов
-|   ├── 📈 merge.xml            # Объединение пользовательских файлов (file_.xml)
-|   ├── 🎨 styles.css           # Стили для таблицы
-|   └── ...
-├── 📋 .gitignore
-├── ☕ build.sh                 # Скрипт build .jar
-├── ☕ Metric.java              # Запуск теста
-├── ☕ Send.java                # Обращение к https и socket
-├── ☕ SendHttps.java           # Запрос по https
-└── ☕ SendSocket.java          # Запрос по ws
-```
-
-## Generate keys
-```bash
-# p12
-keytool -genkeypair -keystore arm.p12 -storetype PKCS12 -storepass MY_PASSWORD -alias KEYSTORE_ENTRY -keyalg RSA -keysize 2048 -validity 99999 -dname "CN=My SSL Certificate, OU=My Team, O=My Company, L=My City, ST=My State, C=SA" -ext san=dns:mydomain.com,dns:localhost,ip:127.0.0.1
-# jks
-keytool -importkeystore -srckeystore arm.p12 \
-        -srcstoretype PKCS12 \
-        -destkeystore arm.jks \
-        -deststoretype JKS
-
-# jks
-keytool -genkey -keyalg RSA -validity 3650 -keystore "keystore.jks" -storepass "MY_PASSWORD" -keypass "keypassword" -alias "default" -dname "CN=127.0.0.1, OU=MyOrgUnit, O=MyOrg, L=MyCity, S=MyRegion, C=MyCountry"
-```
-
-### Libs
-#### JSON
-1. javax.json-1.1.4.jar
-2. javax.json-api-1.1.4.jar
-
-#### JETTY CLIENT
-3. jetty-client-9.3.6.v20151106.jar
-4. jetty-http-9.4.44.v20210927.jar
-5. jetty-io-9.3.6.v20151106.jar
-6. jetty-util-9.3.6.v20151106.jar
-7. websocket-api-9.3.6.vs20151106.jar
-8. websocket-client-9.3.6.v20151106.jar
-9. websocket-common-9.3.6.v20151106.jar
-10. websocket-server-9.3.6.v20151106.jar
-11. websocket-servlet-9.3.6.v20151106.jar
-
-### Server nginx
-```bash
-docker pull nginx
-```
-
-### Maven
-#### Path maven
-```bash
-export M2_HOME=".../apache-maven-3.9.9"
-PATH="${M2_HOME}/bin:${PATH}" 
-export PATH
-```
-
-#### Build jar
-```bash
-mvn install
-```
+#### Примечание
+- SSL disabled https
+- SSL disabled socket
 
 #### Info
 1. [Disable Certificate Validation in Java SSL Connections](https://nakov.com/blog/2009/07/16/disable-certificate-validation-in-java-ssl-connections/)

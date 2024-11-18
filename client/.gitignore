@@ -1,3 +1,5 @@
 # class java
 *.class
 *.jar
+
+./target
