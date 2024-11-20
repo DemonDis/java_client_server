@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metrics>
+    <metric request="req:details" requestName="req:details">
+        <result_time max_time="1">1</result_time>
+    </metric>
+     <metric request="req:details" requestName="req:details_2">
+        <result_time max_time="1">11</result_time>
+    </metric>
+</metrics>

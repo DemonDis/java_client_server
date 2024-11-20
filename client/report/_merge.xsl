@@ -2,13 +2,13 @@
     <xsl:output method="html"/>
 
     <xsl:variable name="allMetric" select="document(/list/entry/@name)//metric" />
-    <xsl:variable name="request" select="document('_request.xml')//list/url/@name" />
-
+    <xsl:variable name="stand_request" select="document('_merge_request.xml')//list/entry/@url" />
+    <xsl:variable name="request" select="document($stand_request)//list/url/@name" />
     <xsl:template match="/">
 
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="styles.css"/>
+                <link rel="stylesheet" type="text/css" href="../../styles.css"/>
             </head>
             <body>
                 <div class="dashboard">
@@ -18,15 +18,20 @@
                     </div>
                     <div class="schedule-table">
                         <h2>Адрес <xsl:value-of select="list/@url"/></h2>
+                        <xsl:for-each select="$request">
+                            <xsl:value-of select="$request"/>
+                            <!-- <xsl:value-of select="$stand_request"/> -->
+                            
+                        </xsl:for-each>
                         <table>
                             <thead>
                                 <tr>
                                     <th>Наименование запроса</th>
                                     <th>Запрос</th>
                                     <th>Количество пользователей</th>
-                                    <th>Целевое время отклика (сек.)</th>
-                                    <th>Максимальное время (сек.)</th>
-                                    <th>Среднее время отклика (сек.)</th>
+                                    <th>Целевое время отклика (с)</th>
+                                    <th>Максимальное время (с)</th>
+                                    <th>Среднее время отклика (с)</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<list>
+    <entry stand="dev" url="./users/dev/_request.xml"/>
+    <entry stand="prod" url="./users/prod/_request.xml"/>
+    <entry stand="test" url="./users/test/_request.xml"/>
+</list>
