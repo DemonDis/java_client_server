@@ -4,6 +4,6 @@
         <result_time max_time="1">1</result_time>
     </metric>
      <metric request="req:details" requestName="req:details_2">
-        <result_time max_time="1">11</result_time>
+        <result_time max_time="1">1</result_time>
     </metric>
 </metrics>

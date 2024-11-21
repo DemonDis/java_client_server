@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metrics>
     <metric request="req:details" requestName="req:details">
-        <result_time max_time="1">3</result_time>
+        <result_time max_time="1">4</result_time>
     </metric>
 </metrics>
