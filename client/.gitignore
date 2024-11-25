@@ -3,3 +3,6 @@
 *.jar
 
 /target
+/report/users
+/report/_index.xml
+/report/_request.xml

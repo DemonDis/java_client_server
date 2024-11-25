@@ -17,6 +17,7 @@ mvn exec:java
 # Maven build
 mvn package
 ```
+jconsole
 
 ## Структура проекта
 ```

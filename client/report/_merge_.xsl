@@ -1,15 +1,13 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="html"/>
 
-    <xsl:variable name="stand" select="concat('./users/', list/@stand, '/_request.xml')" />
-
     <xsl:variable name="allMetric" select="document(/list/entry/@name)//metric" />
-    <xsl:variable name="request" select="document($stand)//list/url/@name" />
+    <xsl:variable name="request" select="document('_request.xml')//list/url/@name" />
     <xsl:template match="/">
 
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="../../styles.css"/>
+                <link rel="stylesheet" type="text/css" href="styles.css"/>
             </head>
             <body>
                 <div class="dashboard">
@@ -19,9 +17,6 @@
                     </div>
                     <div class="schedule-table">
                         <h2>Адрес <xsl:value-of select="list/@url"/></h2>
-                        <xsl:for-each select="$request">
-                            <xsl:value-of select="$request"/>
-                        </xsl:for-each>
                         <table>
                             <thead>
                                 <tr>
