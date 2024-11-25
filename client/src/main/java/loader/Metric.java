@@ -83,7 +83,7 @@ public class Metric {
                 );
 
                 if (j == usersArray.size() - 1) {
-                    TimeUnit.SECONDS.sleep(10);
+                    TimeUnit.SECONDS.sleep(timeout.longValue());
                 }
             } 
 

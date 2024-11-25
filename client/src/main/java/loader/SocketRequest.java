@@ -23,11 +23,13 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.client.HttpClient;
+
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import java.security.cert.X509Certificate;
 import java.util.UUID;
 
 @WebSocket
@@ -38,14 +40,22 @@ public class SocketRequest {
     private String url_arm;
     private String request_name;
     private String max_time;
+    private HttpClient httpClient;
+    private WebSocketClient client;
 
-    public SocketRequest(String name, LocalDateTime startTime, String threadNumber, String url_arm, String request_name, String max_time) {
+    public SocketRequest(
+        String name, LocalDateTime startTime, String threadNumber, 
+        String url_arm, String request_name, String max_time,
+        HttpClient httpClient, WebSocketClient client) {
+
         this.name = name; 
         this.startTime = startTime;
         this.threadNumber = threadNumber;
         this.url_arm = url_arm;
         this.request_name = request_name;
         this.max_time = max_time;
+        this.httpClient = httpClient;
+        this.client = client;
     }
 
     static final Logger LOG = Log.getLogger(SocketRequest.class);
@@ -78,7 +88,7 @@ public class SocketRequest {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss SSS");
         // String resultTime = String.format("%d:%02d:%02d:%02d", diff.toHours(), diff.toMinutesPart(), diff.toSecondsPart(), diff.toMillisPart());
-        String resultTime = String.format("%02d", diff.toSecondsPart());
+        String resultTime = String.format("%02d", diff.toMillisPart());
         String startTimeString = startTime.format(formatter);
         String endTimeString = endTime.format(formatter);
 
@@ -87,5 +97,11 @@ public class SocketRequest {
 
         MetricXml metricXml = new MetricXml(this.name, request_type, resultTime, this.url_arm, request_name, max_time);
         metricXml.saveXml();
+
+        try {
+            httpClient.stop();
+            client.stop();
+        } catch (Throwable t) { LOG.warn(t); }
+
     };
 }

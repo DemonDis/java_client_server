@@ -17,7 +17,11 @@ mvn exec:java
 # Maven build
 mvn package
 ```
+
+## Контроль работы программы
+```bash
 jconsole
+```
 
 ## Структура проекта
 ```

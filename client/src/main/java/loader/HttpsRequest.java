@@ -158,9 +158,12 @@ class HttpsRequest implements Runnable {
                 httpClient.start();
                 WebSocketClient client = new WebSocketClient(httpClient);
                 client.start();
-                httpClient.start();
 
-                SocketRequest socket = new SocketRequest(this.name, startTime, Thread.currentThread().getName(), this.url_arm, request_name, max_time);
+                SocketRequest socket = new SocketRequest(
+                    this.name, startTime, Thread.currentThread().getName(), 
+                    this.url_arm, request_name, max_time,
+                    httpClient, client
+                );
 
                 Future<Session> fut = client.connect(socket, URI.create(urlARMSocket));
 
