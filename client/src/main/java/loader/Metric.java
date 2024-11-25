@@ -1,6 +1,9 @@
 package loader;
 
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.io.FileInputStream;
 import java.io.File;
 
@@ -26,8 +29,8 @@ public class Metric {
         JsonArray usersArray = config_fileObject.getJsonArray("users");
         JsonArray requestsArray = config_fileObject.getJsonArray("request");
 
-        MetricLog metricLog = new MetricLog();
-        metricLog.saveLogs();
+        // MetricLog metricLog = new MetricLog();
+        // metricLog.saveLogs();
 
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setIncludes(new String[]{"**/*.xml"});
@@ -49,6 +52,8 @@ public class Metric {
         } catch (ParserConfigurationException e) { System.out.println(e); 
         } catch (TransformerException e) { System.out.println(e); }
 
+        ExecutorService executorService = Executors.newFixedThreadPool(usersArray.size());
+        
         for (int i = 0; i < requestsArray.size(); i++) {
 
             JsonObject requestObject = requestsArray.getJsonObject(i);
@@ -59,12 +64,12 @@ public class Metric {
             JsonNumber timeout = requestObject.getJsonNumber("timeout");
 
             for (int j = 0; j < usersArray.size(); j++) {
-            JsonObject usersObject = usersArray.getJsonObject(j);
-            String userString = usersObject.getString("user");
-            String roleString = usersObject.getString("role");
-            String password = usersObject.getString("password");
-
-                Thread threadStart = new Thread( 
+                JsonObject usersObject = usersArray.getJsonObject(j);
+                String userString = usersObject.getString("user");
+                String roleString = usersObject.getString("role");
+                String password = usersObject.getString("password");
+                
+                executorService.execute(
                     new HttpsRequest(
                         userString,
                         request_type, 
@@ -76,12 +81,9 @@ public class Metric {
                         roleString
                     )
                 );
-                System.out.println(threadStart.getState() + " " + threadStart.getName());
-                threadStart.start();
-                System.out.println(threadStart.getState() + " " + threadStart.getName());
 
-                if ( j == usersArray.size() - 1) {
-                    Thread.sleep(timeout.longValue());
+                if (j == usersArray.size() - 1) {
+                    TimeUnit.SECONDS.sleep(10);
                 }
             } 
 

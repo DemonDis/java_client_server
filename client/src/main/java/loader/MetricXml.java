@@ -53,7 +53,7 @@ public class MetricXml {
         LocalDateTime nowTime = LocalDateTime.now();
         String timeString = nowTime.format(formatter);
 
-        String filePath = "./report/" + name +"_result.xml";
+        String filePath = "./report/users/" + name +"_result.xml";
         File file = new File(filePath);
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

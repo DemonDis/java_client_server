@@ -62,9 +62,9 @@ class HttpsRequest implements Runnable {
 
     public void run()  {
         ex=null;
-        String urlARMLogin= "https://" + url_arm + "/v1/login";
-        String urlARMRole = "https://" + url_arm + "/v1/role ";
-        String urlARMSocket = "wss://" + url_arm + "/v1/wss";
+        String urlARMLogin= "https://localhost:3002/v1/login";
+        String urlARMRole = "https://localhost:3002/v1/role ";
+        String urlARMSocket = "wss://localhost:3001/v1/wss";
 
         JsonObject login = Json.createObjectBuilder()
             .add("close_previous_session", "true")
@@ -113,12 +113,12 @@ class HttpsRequest implements Runnable {
             InputStream is = con.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
+            LOG.info("[BR] {}", br);
+            // JsonReader reader = Json.createReader(br);
+            // JsonObject obj = reader.readObject();
 
-            JsonReader reader = Json.createReader(br);
-            JsonObject obj = reader.readObject();
-
-            String sessionId = obj.getString("session_id");
-
+            // String sessionId = obj.getString("session_id");
+            // reader.close();
             // Выбор role
             URL url_2 = new URL(urlARMRole);
             HttpsURLConnection con_2 = (HttpsURLConnection) url_2.openConnection();
@@ -131,7 +131,7 @@ class HttpsRequest implements Runnable {
 
             JsonObject role = Json.createObjectBuilder()
                 .add("role", request_role)
-                .add("session_id", sessionId)
+                .add("session_id", "sessionId")
             .build();
 
             try(OutputStreamWriter writer = new OutputStreamWriter(con_2.getOutputStream())) {
@@ -144,7 +144,8 @@ class HttpsRequest implements Runnable {
 
             JsonReader reader_2 = Json.createReader(br_2);
             JsonObject obj_2 = reader_2.readObject();
-
+            reader_2.close();
+            
             String tokenJWT = obj_2.getString("token");
 
             // Socket
