@@ -83,6 +83,7 @@ public class Metric {
                 );
 
                 if (j == usersArray.size() - 1) {
+                    System.out.println("📢 [TIMEOUT] " + timeout.longValue());
                     TimeUnit.SECONDS.sleep(timeout.longValue());
                 }
             } 
