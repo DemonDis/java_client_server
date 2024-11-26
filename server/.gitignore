@@ -9,3 +9,5 @@ certificate
 
 # lock
 package-lock.json
+
+/src
