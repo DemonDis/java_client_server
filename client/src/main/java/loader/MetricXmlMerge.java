@@ -1,6 +1,8 @@
 package loader;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
@@ -47,7 +49,8 @@ public class MetricXmlMerge {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss");
         LocalDateTime nowTime = LocalDateTime.now();
         String timeString = nowTime.format(formatter);
-
+        String timeServer = nowTime.atZone(ZoneId.of("+07:00")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss").withZone(ZoneOffset.UTC));
+        
         String filePath = "./report/_index.xml";
         File file = new File(filePath);
 
@@ -66,7 +69,7 @@ public class MetricXmlMerge {
             Element list = doc.createElement("list");
             doc.appendChild(list);
             list.setAttribute("url", url_arm);
-            list.setAttribute("date", timeString);
+            list.setAttribute("date", timeServer);
 
         for (int i = 0; i < users.size() ; i++) {
             JsonObject usersObject = users.getJsonObject(i);
