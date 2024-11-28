@@ -32,7 +32,7 @@
                                 <xsl:for-each select="$request">
                                     <xsl:variable name="pos" select="position()"/>
                                     <tr>
-                                        <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//@request"/></td>
+                                        <td><xsl:value-of select="$request[$pos]"/></td>
                                         <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//@requestName"/></td>
                                         <td><xsl:value-of select="count($allMetric[@requestName = $request[$pos]])"/></td>
                                         <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//result_time/@max_time"/></td>
