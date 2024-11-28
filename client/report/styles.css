@@ -236,8 +236,22 @@ li {
 	}
 }
 
-.tableFixHead          { overflow-y: auto; height: 300px; }
+.tableFixHead          { overflow-y: auto; max-height: 300px; }
 .tableFixHead thead th { position: sticky; top: 0; z-index: 1; }
 
 /* table  { border-collapse: collapse; width: 100%; } */
 /* th, td { padding: 8px 16px; } */
+
+table th:nth-child(1), 
+table td:nth-child(1) { 
+  width: 1%;
+}
+table th:nth-child(2), 
+table td:nth-child(2) { 
+  width: 20%; 
+  word-break: break-all;
+}
+table th:nth-child(3), 
+table td:nth-child(3) { 
+  width: 25%; 
+}

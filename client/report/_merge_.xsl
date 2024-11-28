@@ -21,6 +21,7 @@
                         <table>
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>Наименование запроса</th>
                                     <th>Запрос</th>
                                     <th>Количество пользователей</th>
@@ -33,6 +34,7 @@
                                 <xsl:for-each select="$request">
                                     <xsl:variable name="pos" select="position()"/>
                                     <tr>
+                                        <td><xsl:value-of select="$pos"/></td>
                                         <td><xsl:value-of select="$request[$pos]"/></td>
                                         <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//@requestName"/></td>
                                         <td><xsl:value-of select="count($allMetric[@requestName = $request[$pos]])"/></td>
