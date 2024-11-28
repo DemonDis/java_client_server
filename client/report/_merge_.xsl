@@ -17,6 +17,7 @@
                     </div>
                     <div class="schedule-table">
                         <h2>Адрес <xsl:value-of select="list/@url"/></h2>
+                        <div class="tableFixHead">
                         <table>
                             <thead>
                                 <tr>
@@ -49,6 +50,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </body>
