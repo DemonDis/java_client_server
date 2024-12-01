@@ -1,0 +1,213 @@
+@font-face {
+  font-family: 'Bebas Neue';
+  src: 
+    local('Bebas Neue Thin'),
+    local('BebasNeue-Thin'),
+    url('fonts/bebasneuethin.woff2') format('woff2'),
+    url('fonts/bebasneuethin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src: 
+    local('Bebas Neue Light'), 
+    local('BebasNeue-Light'), 
+    url('fonts/bebasneuelight.woff2') format('woff2'), 
+    url('fonts/bebasneuelight.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src: 
+    local('Bebas Neue Book'),
+    local('BebasNeueBook'), 
+    url('fonts/bebasneuebook.woff2') format('woff2'),
+    url('fonts/bebasneuebook.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src:
+    local('Bebas Neue Regular'),
+    local('BebasNeueRegular'),
+    url('fonts/bebasneueregular.woff2') format('woff2'),
+    url('fonts/bebasneueregular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src:
+    local('Bebas Neue Bold'),
+    local('BebasNeueBold'),
+    url('fonts/bebasneuebold.woff2') format('woff2'),
+    url('fonts/bebasneuebold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  line-height: 1.5;
+  font-size: 16px;
+  font-family: "Public Sans", "Open Sans", sans-serif;
+  font-weight: 400;
+  background: #ffffff;
+  color: #0f0617;
+  background-image:  repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 0.5rem,
+    #dcc5f0 0.5rem,
+    #dcc5f0 0.75rem
+  );
+}
+
+h2 {
+  font-family: "Bebas Neue", "Open Sans", sans-serif;
+  font-weight: 400;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.dashboard {
+  display: table;
+  grid-template-columns: 1fr;
+  gap: 1.5rem 1rem;
+  padding: 1rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 1200px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 2rem;
+    max-width: 90%;
+    padding: 5rem;
+  }
+}
+@media (min-width: 1400px) {
+  .dashboard {
+    max-width: 75%;
+  }
+}
+
+.dashboard > div:not(.profile):not(.calories) {
+  position: relative;
+  order: 2;
+  background: #ffffff;
+  border: 0.25rem solid #0f0617;
+  box-shadow: 0.5rem 0.5rem 0 #0f0617;
+}
+
+.dashboard > div:not(.profile):not(.calories):after,
+.dashboard > div:not(.profile):not(.calories):before {
+  content: "";
+  position: absolute;
+  top: 0.25rem;
+  left: 1.25rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #ffef5a;
+  border: 0.125rem solid #0f0617;
+}
+
+.dashboard > div:not(.profile):not(.calories):after {
+  left: 2.25rem;
+  background: #90ee90;
+}
+
+.dashboard > div:not(.profile):not(.calories) h2 {
+  border: 0.25rem solid #0f0617;
+  border-left: 0;
+  border-right: 0;
+  margin: 1.25rem 0 0;
+  padding: 2rem 1.5rem;
+}
+
+.dashboard > div:not(.profile):not(.calories) h2:before {
+  content: "";
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #ff6b6b;
+  border: 0.125rem solid #0f0617;
+}
+
+.schedule-table {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  justify-content: center;
+}
+
+.schedule-table tr {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  align-items: center;
+  background: #ffffff;
+}
+
+.schedule-table tr:has(th) {
+  display: none;
+}
+
+.schedule-table tr:nth-child(even) {
+  background: #e8d9f5;
+}
+
+.schedule-table td:nth-child(1) {
+  font-family: "Bebas Neue", "Open Sans", sans-serif;
+  font-size: 2rem;
+  font-weight: 400;
+  order: 1;
+  color: #924cd0;
+}
+
+.schedule-table td:nth-child(2) {
+  order: 3;
+  margin-left: auto;
+}
+
+.schedule-table td:nth-child(3) {
+  order: 2;
+  display: inline-block;
+  margin-left: 0.5rem;
+  background: #ffef5a;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2rem;
+  font-family: "Bebas Neue", "Open Sans", sans-serif;
+}
+
+tr {
+  cursor: pointer;
+  border: 3px inset transparent; 
+}
+tr:hover {
+  background-color: #ffef5a !important;
+}
+tr:active {
+  border: inset 3px #924cd0;
+}
