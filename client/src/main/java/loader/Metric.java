@@ -21,61 +21,64 @@ import org.apache.tools.ant.DirectoryScanner;
 public class Metric {
     public static void main(String[] args) throws Exception {
 
-        InputStream config_file = new FileInputStream("./report/_conf.json");
-        JsonReader reader = Json.createReader(config_file);
-        JsonObject config_fileObject = reader.readObject();
-        reader.close();
+        // InputStream config_file = new FileInputStream("./report/_conf.json");
+        // JsonReader reader = Json.createReader(config_file);
+        // JsonObject config_fileObject = reader.readObject();
+        // reader.close();
 
-        JsonArray usersArray = config_fileObject.getJsonArray("users");
-        JsonArray requestsArray = config_fileObject.getJsonArray("request");
+        // JsonArray usersArray = config_fileObject.getJsonArray("users");
+        // JsonArray requestsArray = config_fileObject.getJsonArray("request");
 
         // MetricLog metricLog = new MetricLog();
         // metricLog.saveLogs();
 
-        FileWork fileWork = new FileWork();
-        fileWork.doFile();
+        // FileWork fileWork = new FileWork();
+        // fileWork.doFile();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(usersArray.size());
+        // ExecutorService executorService = Executors.newFixedThreadPool(usersArray.size());
         
-        for (int i = 0; i < requestsArray.size(); i++) {
+        // for (int i = 0; i < requestsArray.size(); i++) {
 
-            JsonObject requestObject = requestsArray.getJsonObject(i);
-            String request_type = requestObject.getString("request_type");
-            String name = requestObject.getString("name");
-            String max_time = requestObject.getString("max_time");
-            String request_body = requestObject.getString("request_body");
-            JsonNumber timeout = requestObject.getJsonNumber("timeout");
+        //     JsonObject requestObject = requestsArray.getJsonObject(i);
+        //     String request_type = requestObject.getString("request_type");
+        //     String name = requestObject.getString("name");
+        //     String max_time = requestObject.getString("max_time");
+        //     String request_body = requestObject.getString("request_body");
+        //     JsonNumber timeout = requestObject.getJsonNumber("timeout");
 
-            for (int j = 0; j < usersArray.size(); j++) {
-                JsonObject usersObject = usersArray.getJsonObject(j);
-                String userString = usersObject.getString("user");
-                String roleString = usersObject.getString("role");
-                String password = usersObject.getString("password");
+        //     for (int j = 0; j < usersArray.size(); j++) {
+        //         JsonObject usersObject = usersArray.getJsonObject(j);
+        //         String userString = usersObject.getString("user");
+        //         String roleString = usersObject.getString("role");
+        //         String password = usersObject.getString("password");
                 
-                executorService.execute(
-                    new HttpsRequest(
-                        userString,
-                        request_type, 
-                        config_fileObject.getString("url"), 
-                        name, 
-                        max_time,
-                        request_body,
-                        password,
-                        roleString
-                    )
-                );
+        //         executorService.execute(
+        //             new HttpsRequest(
+        //                 userString,
+        //                 request_type, 
+        //                 config_fileObject.getString("url"), 
+        //                 name, 
+        //                 max_time,
+        //                 request_body,
+        //                 password,
+        //                 roleString
+        //             )
+        //         );
 
-                if (j == usersArray.size() - 1) {
-                    System.out.println("📢 [TIMEOUT] " + timeout.longValue());
-                    TimeUnit.SECONDS.sleep(timeout.longValue());
-                }
-            } 
+        //         if (j == usersArray.size() - 1) {
+        //             System.out.println("📢 [TIMEOUT] " + timeout.longValue());
+        //             TimeUnit.SECONDS.sleep(timeout.longValue());
+        //         }
+        //     } 
 
-            if ( i == requestsArray.size() - 1) {
-                System.out.println("⛔ END ⛔");
-                System.exit(0);
-            }
-        }
+        //     if ( i == requestsArray.size() - 1) {
+        //         System.out.println("⛔ END ⛔");
+        //         System.exit(0);
+        //     }
+        // }
     
+        MetricXmlMainPage metricXmlMainPage = new MetricXmlMainPage();
+        metricXmlMainPage.createPage();
+
     }
 }
