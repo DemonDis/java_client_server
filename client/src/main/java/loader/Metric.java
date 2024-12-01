@@ -32,25 +32,8 @@ public class Metric {
         // MetricLog metricLog = new MetricLog();
         // metricLog.saveLogs();
 
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(new String[]{"**/*.xml"});
-        scanner.setBasedir(new File("./report"));
-        scanner.setCaseSensitive(false);
-        scanner.scan();
-        String[] files = scanner.getIncludedFiles();
-        for (String file : files) {
-            String fileXmlUser = "./report/" + file;
-            File file_del = new File(fileXmlUser);
-            file_del.delete();
-        }
-
-        try {
-            MetricXmlMerge metricXmlMerge = new MetricXmlMerge(usersArray, config_fileObject.getString("url"));
-            metricXmlMerge.saveXmlMerge();
-            MetricXmlRequestList metricXmlRequestList = new MetricXmlRequestList(requestsArray);
-            metricXmlRequestList.saveXmlMergeRequestList();
-        } catch (ParserConfigurationException e) { System.out.println(e); 
-        } catch (TransformerException e) { System.out.println(e); }
+        FileWork fileWork = new FileWork();
+        fileWork.doFile();
 
         ExecutorService executorService = Executors.newFixedThreadPool(usersArray.size());
         
@@ -93,5 +76,6 @@ public class Metric {
                 System.exit(0);
             }
         }
+    
     }
 }
