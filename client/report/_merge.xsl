@@ -5,11 +5,13 @@
 
     <xsl:variable name="allMetric" select="document(/list/entry/@name)//metric" />
     <xsl:variable name="request" select="document($stand)//list/url/@name" />
-    <xsl:template match="/">
 
+    <xsl:template match="/">
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="../../styles.css"/>
+                <link rel="icon" type="image/x-icon" href="../../favicon.ico"/>
+                <title><xsl:value-of select="list/@stand"/></title>
             </head>
             <body>
                 <div class="dashboard">
@@ -57,7 +59,7 @@
                     </div>
                 </div>
             </body>
-    </html>
+        </html>
     </xsl:template>
 
 </xsl:stylesheet>
