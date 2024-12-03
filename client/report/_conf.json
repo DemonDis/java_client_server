@@ -1,12 +1,32 @@
 {
     "url": "localhost:8080",
     "users": [
-        {"num": "1", "user": "user_1", "role": "role_1", "password": "123"}
+        {"num": "1", "user": "user_1", "role": "role_1", "password": "123"},
+        {"num": "2", "user": "user_2", "role": "role_1", "password": "123"},
+        {"num": "3", "user": "client_1", "role": "role_2", "password": "123"},
+        {"num": "4", "user": "sup_2", "role": "role_3ß", "password": "123"}
     ],
     "request": [
         {
             "request_type": "req:details",
-            "name": "#1 Пользователи",
+            "try_user": ["user", "client", "sup"],
+            "name": "#1 Запрос",
+            "max_time": "5",
+            "request_body": "{\"message_id\":\"%s\",\"request_type\":\"%s\",\"request\": {\"name\": \"user_1\"},\"token\": \"%s\"}",
+            "timeout": 10
+        },
+        {
+            "request_type": "req:details:client",
+            "try_user": ["user", "client"],
+            "name": "#2 Запрос",
+            "max_time": "5",
+            "request_body": "{\"message_id\":\"%s\",\"request_type\":\"%s\",\"request\": {\"name\": \"user_1\"},\"token\": \"%s\"}",
+            "timeout": 10
+        },
+        {
+            "request_type": "req:details:org",
+            "try_user": ["user", "client"],
+            "name": "#3 Запрос",
             "max_time": "5",
             "request_body": "{\"message_id\":\"%s\",\"request_type\":\"%s\",\"request\": {\"name\": \"user_1\"},\"token\": \"%s\"}",
             "timeout": 10

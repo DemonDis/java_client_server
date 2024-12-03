@@ -21,13 +21,13 @@ import org.apache.tools.ant.DirectoryScanner;
 public class Metric {
     public static void main(String[] args) throws Exception {
 
-        // InputStream config_file = new FileInputStream("./report/_conf.json");
-        // JsonReader reader = Json.createReader(config_file);
-        // JsonObject config_fileObject = reader.readObject();
-        // reader.close();
+        InputStream config_file = new FileInputStream("./report/_conf.json");
+        JsonReader reader = Json.createReader(config_file);
+        JsonObject config_fileObject = reader.readObject();
+        reader.close();
 
-        // JsonArray usersArray = config_fileObject.getJsonArray("users");
-        // JsonArray requestsArray = config_fileObject.getJsonArray("request");
+        JsonArray usersArray = config_fileObject.getJsonArray("users");
+        JsonArray requestsArray = config_fileObject.getJsonArray("request");
 
         // MetricLog metricLog = new MetricLog();
         // metricLog.saveLogs();
@@ -77,8 +77,30 @@ public class Metric {
         //     }
         // }
     
-        MetricXmlMainPage metricXmlMainPage = new MetricXmlMainPage();
-        metricXmlMainPage.createPage();
+        // MetricXmlMainPage metricXmlMainPage = new MetricXmlMainPage();
+        // metricXmlMainPage.createPage();
+
+        for (int i = 0; i < requestsArray.size(); i++) {
+            JsonObject requestObject = requestsArray.getJsonObject(i);
+            JsonArray try_user = requestObject.getJsonArray("try_user");
+
+            System.out.println("📢 " + try_user);
+
+            for (int j = 0; j < usersArray.size(); j++) {
+                JsonObject usersObject = usersArray.getJsonObject(j);
+                String userString = usersObject.getString("user");
+                String userCut = (new String(userString.substring(0, userString.lastIndexOf('_')))).intern();
+
+                for (int m = 0; m < try_user.size(); m++) {
+                    // System.out.println("⛔ " + try_user.getString(m) + "   " + userCut);
+                    String userC = (new String(try_user.getString(m))).intern();
+
+                    if (userC == userCut) {
+                        System.out.println("⛔ " + try_user.getString(m));
+                    }
+                }
+            } 
+        }
 
     }
 }
