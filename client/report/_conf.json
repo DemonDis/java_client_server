@@ -3,12 +3,19 @@
     "users": [
         {"num": "1", "user": "user_1", "role": "role_1", "password": "123"},
         {"num": "2", "user": "user_2", "role": "role_1", "password": "123"},
+
         {"num": "3", "user": "client_1", "role": "role_2", "password": "123"},
-        {"num": "4", "user": "sup_2", "role": "role_3ß", "password": "123"}
+
+        {"num": "4", "user": "sup_1", "role": "role_3", "password": "123"},
+        {"num": "5", "user": "sup_3", "role": "role_3", "password": "123"},
+
+        {"num": "6", "user": "sas_1", "role": "role_4", "password": "123"},
+        {"num": "7", "user": "sas_2", "role": "role_4", "password": "123"},
+        {"num": "8", "user": "sas_3", "role": "role_4", "password": "123"}
     ],
     "request": [
         {
-            "request_type": "req:details",
+            "request_type": "req:1",
             "try_user": ["user", "client", "sup"],
             "name": "#1 Запрос",
             "max_time": "5",
@@ -16,7 +23,7 @@
             "timeout": 10
         },
         {
-            "request_type": "req:details:client",
+            "request_type": "req:2",
             "try_user": ["user", "client"],
             "name": "#2 Запрос",
             "max_time": "5",
@@ -24,7 +31,7 @@
             "timeout": 10
         },
         {
-            "request_type": "req:details:org",
+            "request_type": "req:3",
             "try_user": ["user", "client"],
             "name": "#3 Запрос",
             "max_time": "5",

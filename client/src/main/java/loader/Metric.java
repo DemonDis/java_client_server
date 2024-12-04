@@ -1,6 +1,9 @@
 package loader;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,10 +15,12 @@ import javax.xml.transform.TransformerException;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonNumber;
 import javax.json.JsonReader;
-
 import org.apache.tools.ant.DirectoryScanner;
 
 public class Metric {
@@ -80,11 +85,18 @@ public class Metric {
         // MetricXmlMainPage metricXmlMainPage = new MetricXmlMainPage();
         // metricXmlMainPage.createPage();
 
+		Map<String, Integer> letters = new HashMap<String, Integer>();
+		ArrayList<String> fakeArray = new ArrayList<String>();
+
+        JsonArrayBuilder jsonArray = Json.createArrayBuilder();
+        JsonObjectBuilder jsonObject = Json.createObjectBuilder();
+        JsonArrayBuilder jsonArrayUsers = Json.createArrayBuilder();
+
         for (int i = 0; i < requestsArray.size(); i++) {
             JsonObject requestObject = requestsArray.getJsonObject(i);
             JsonArray try_user = requestObject.getJsonArray("try_user");
-
-            System.out.println("📢 " + try_user);
+    
+            // System.out.println("📢 " + try_user);
 
             for (int j = 0; j < usersArray.size(); j++) {
                 JsonObject usersObject = usersArray.getJsonObject(j);
@@ -92,15 +104,43 @@ public class Metric {
                 String userCut = (new String(userString.substring(0, userString.lastIndexOf('_')))).intern();
 
                 for (int m = 0; m < try_user.size(); m++) {
-                    // System.out.println("⛔ " + try_user.getString(m) + "   " + userCut);
                     String userC = (new String(try_user.getString(m))).intern();
 
                     if (userC == userCut) {
-                        System.out.println("⛔ " + try_user.getString(m));
+                        // System.out.println("⛔ " + try_user.getString(m));
+                        fakeArray.add(try_user.getString(m));
                     }
                 }
             } 
+          
+            for (int h = 0; h < fakeArray.size(); h++) {
+                String tempChar = fakeArray.get(h);
+    
+                if (!letters.containsKey(tempChar)) {
+                    letters.put(tempChar, 1);
+                } else {
+                    letters.put(tempChar, letters.get(tempChar) + 1);
+                }
+            }
+
+
+            for (Map.Entry<String, Integer> entry : letters.entrySet()) {
+                jsonObject.add("user", entry.getKey());
+                jsonObject.add("total", entry.getValue());
+                jsonArray.add(jsonObject);
+                
+                System.out.println("Пользователь = " + entry.getKey() + ", Повторений = " + entry.getValue());
+            }
+            jsonArrayUsers.add(jsonArray);
+
+            System.out.println("============");
+            fakeArray.clear();
+            letters.clear();
+
         }
 
+        JsonArray array = jsonArrayUsers.build();
+        System.out.println("⛔ " + array);
+        
     }
 }
