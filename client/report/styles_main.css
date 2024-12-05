@@ -1,54 +1,27 @@
+/* Объединение всех @font-face в один блок */
 @font-face {
   font-family: 'Bebas Neue';
   src: 
-    local('Bebas Neue Thin'),
-    local('BebasNeue-Thin'),
-    url('fonts/bebasneuethin.woff2') format('woff2'),
-    url('fonts/bebasneuethin.woff') format('woff');
-  font-weight: 100;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Bebas Neue';
-  src: 
-    local('Bebas Neue Light'), 
-    local('BebasNeue-Light'), 
-    url('fonts/bebasneuelight.woff2') format('woff2'), 
-    url('fonts/bebasneuelight.woff') format('woff');
-  font-weight: 200;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Bebas Neue';
-  src: 
-    local('Bebas Neue Book'),
-    local('BebasNeueBook'), 
-    url('fonts/bebasneuebook.woff2') format('woff2'),
-    url('fonts/bebasneuebook.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Bebas Neue';
-  src:
-    local('Bebas Neue Regular'),
-    local('BebasNeueRegular'),
-    url('fonts/bebasneueregular.woff2') format('woff2'),
-    url('fonts/bebasneueregular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Bebas Neue';
-  src:
-    local('Bebas Neue Bold'),
-    local('BebasNeueBold'),
-    url('fonts/bebasneuebold.woff2') format('woff2'),
-    url('fonts/bebasneuebold.woff') format('woff');
-  font-weight: 700;
+    local('Bebas Neue Thin'), local('BebasNeue-Thin'), url('fonts/bebasneuethin.woff2') format('woff2'), url('fonts/bebasneuethin.woff') format('woff'),
+    local('Bebas Neue Light'), local('BebasNeue-Light'), url('fonts/bebasneuelight.woff2') format('woff2'), url('fonts/bebasneuelight.woff') format('woff'),
+    local('Bebas Neue Book'), local('BebasNeueBook'), url('fonts/bebasneuebook.woff2') format('woff2'), url('fonts/bebasneuebook.woff') format('woff'),
+    local('Bebas Neue Regular'), local('BebasNeueRegular'), url('fonts/bebasneueregular.woff2') format('woff2'), url('fonts/bebasneueregular.woff') format('woff'),
+    local('Bebas Neue Bold'), local('BebasNeueBold'), url('fonts/bebasneuebold.woff2') format('woff2'), url('fonts/bebasneuebold.woff') format('woff');
+  font-weight: 100 700;
   font-style: normal;
 }
 
+/* Общие переменные для цветов */
+:root {
+  --primary-color: #924cd0;
+  --secondary-color: #ffef5a;
+  --bg-color: #ffffff;
+  --hover-bg-color: #ffef5a;
+  --active-border-color: #924cd0;
+  --table-row-even-bg: #e8d9f5;
+  --profile-border: #0f0617;
+  --text-color: #0f0617;
+}
 
 *,
 *:before,
@@ -63,15 +36,9 @@ body {
   font-size: 16px;
   font-family: "Public Sans", "Open Sans", sans-serif;
   font-weight: 400;
-  background: #ffffff;
-  color: #0f0617;
-  background-image:  repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 0.5rem,
-    #dcc5f0 0.5rem,
-    #dcc5f0 0.75rem
-  );
+  background: var(--bg-color);
+  color: var(--text-color);
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 0.5rem, #dcc5f0 0.5rem, #dcc5f0 0.75rem);
 }
 
 h2 {
@@ -102,6 +69,7 @@ table {
     padding: 5rem;
   }
 }
+
 @media (min-width: 1400px) {
   .dashboard {
     max-width: 75%;
@@ -111,9 +79,9 @@ table {
 .dashboard > div:not(.profile):not(.calories) {
   position: relative;
   order: 2;
-  background: #ffffff;
-  border: 0.25rem solid #0f0617;
-  box-shadow: 0.5rem 0.5rem 0 #0f0617;
+  background: var(--bg-color);
+  border: 0.25rem solid var(--profile-border);
+  box-shadow: 0.5rem 0.5rem 0 var(--profile-border);
 }
 
 .dashboard > div:not(.profile):not(.calories):after,
@@ -125,8 +93,8 @@ table {
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 50%;
-  background: #ffef5a;
-  border: 0.125rem solid #0f0617;
+  background: var(--secondary-color);
+  border: 0.125rem solid var(--profile-border);
 }
 
 .dashboard > div:not(.profile):not(.calories):after {
@@ -135,7 +103,7 @@ table {
 }
 
 .dashboard > div:not(.profile):not(.calories) h2 {
-  border: 0.25rem solid #0f0617;
+  border: 0.25rem solid var(--profile-border);
   border-left: 0;
   border-right: 0;
   margin: 1.25rem 0 0;
@@ -151,7 +119,7 @@ table {
   height: 0.75rem;
   border-radius: 50%;
   background: #ff6b6b;
-  border: 0.125rem solid #0f0617;
+  border: 0.125rem solid var(--profile-border);
 }
 
 .schedule-table {
@@ -167,15 +135,11 @@ table {
   justify-content: space-between;
   padding: 1rem 1.5rem;
   align-items: center;
-  background: #ffffff;
-}
-
-.schedule-table tr:has(th) {
-  display: none;
+  background: var(--bg-color);
 }
 
 .schedule-table tr:nth-child(even) {
-  background: #e8d9f5;
+  background: var(--table-row-even-bg);
 }
 
 .schedule-table td:nth-child(1) {
@@ -183,7 +147,7 @@ table {
   font-size: 2rem;
   font-weight: 400;
   order: 1;
-  color: #924cd0;
+  color: var(--primary-color);
 }
 
 .schedule-table td:nth-child(2) {
@@ -195,7 +159,7 @@ table {
   order: 2;
   display: inline-block;
   margin-left: 0.5rem;
-  background: #ffef5a;
+  background: var(--secondary-color);
   padding: 0.25rem 0.75rem;
   border-radius: 2rem;
   font-family: "Bebas Neue", "Open Sans", sans-serif;
@@ -203,11 +167,13 @@ table {
 
 tr {
   cursor: pointer;
-  border: 3px inset transparent; 
+  border: 3px inset transparent;
 }
+
 tr:hover {
-  background-color: #ffef5a !important;
+  background-color: var(--hover-bg-color) !important;
 }
+
 tr:active {
-  border: inset 3px #924cd0;
+  border: inset 3px var(--primary-color);
 }

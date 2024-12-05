@@ -1,8 +1,10 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="html"/>
 
+    <!-- Определение пути к файлу запроса -->
     <xsl:variable name="stand" select="concat('./stands/', list/@stand, '/_request.xml')" />
-
+    
+    <!-- Загружаем все метрики и запросы -->
     <xsl:variable name="allMetric" select="document(/list/entry/@name)//metric" />
     <xsl:variable name="request" select="document($stand)//list/url/@name" />
 
@@ -21,9 +23,13 @@
                     </div>
                     <div class="schedule-table">
                         <h2>Адрес <xsl:value-of select="list/@url"/></h2>
+                        
+                        <!-- Выводим все запросы -->
                         <xsl:for-each select="$request">
-                            <xsl:value-of select="$request"/>
+                            <xsl:value-of select="."/><br/>
                         </xsl:for-each>
+
+                        <!-- Таблица с метриками -->
                         <table>
                             <thead>
                                 <tr>
@@ -36,22 +42,35 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Цикл по запросам -->
                                 <xsl:for-each select="$request">
-                                    <xsl:variable name="pos" select="position()"/>
+                                    <xsl:variable name="currentRequest" select="."/>
+                                    <xsl:variable name="metricsForRequest" select="$allMetric[@requestName = $currentRequest]"/>
+
                                     <tr>
-                                        <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//@request"/></td>
-                                        <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//@requestName"/></td>
-                                        <td><xsl:value-of select="count($allMetric[@requestName = $request[$pos]])"/></td>
-                                        <td><xsl:value-of select="$allMetric[@requestName = $request[$pos]]//result_time/@max_time"/></td>
+                                        <!-- Название запроса -->
+                                        <td><xsl:value-of select="$metricsForRequest//@request"/></td>
+                                        <!-- Запрос -->
+                                        <td><xsl:value-of select="$metricsForRequest//@requestName"/></td>
+                                        <!-- Количество пользователей -->
+                                        <td><xsl:value-of select="count($metricsForRequest)"/></td>
+                                        <!-- Максимальное время отклика -->
                                         <td>
-                                            <xsl:for-each select="$allMetric[@requestName = $request[$pos]]//result_time">
+                                            <xsl:value-of select="$metricsForRequest//result_time/@max_time"/>
+                                        </td>
+                                        <!-- Максимальное время -->
+                                        <td>
+                                            <xsl:for-each select="$metricsForRequest//result_time">
                                                 <xsl:sort select="." data-type="number" order="descending"/>
                                                 <xsl:if test="position()=1">
                                                     <xsl:value-of select="."/>
                                                 </xsl:if>
                                             </xsl:for-each>
                                         </td>
-                                        <td><xsl:value-of select="sum($allMetric[@requestName = $request[$pos]]//result_time) div count($allMetric[@requestName = $request[$pos]])"/></td>
+                                        <!-- Среднее время отклика -->
+                                        <td>
+                                            <xsl:value-of select="sum($metricsForRequest//result_time) div count($metricsForRequest)"/>
+                                        </td>
                                     </tr>
                                 </xsl:for-each>
                             </tbody>
@@ -61,5 +80,4 @@
             </body>
         </html>
     </xsl:template>
-
 </xsl:stylesheet>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <metrics>
   <metric request="#1 Запрос" requestName="form">
-    <result_time max_time="5">310</result_time>
+    <result_time max_time="5">601</result_time>
   </metric>
   <metric request="#1 Запрос" requestName="form:">
-    <result_time max_time="5">56</result_time>
+    <result_time max_time="5">53</result_time>
   </metric>
 </metrics>

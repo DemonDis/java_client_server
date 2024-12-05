@@ -1,56 +1,61 @@
 [ {
-  "timestamp" : "2024.12.05 23:44:27",
+  "timestamp" : "2024.12.06 00:07:43",
   "thread" : "pool-1-thread-1",
   "event" : "onConnect",
   "message" : "User connected: user_1"
 }, {
-  "timestamp" : "2024.12.05 23:44:27",
-  "thread" : "pool-1-thread-2",
-  "event" : "onMessage",
-  "message" : "Message received: {\"correlation_id\":\"692622ff-63b5-4378-bf25-c7ab2ef70ac1\",\"request_type\":\"form\",\"status\":0,\"response\":\"[form] неизвестный тип запроса\"}"
-}, {
-  "timestamp" : "2024.12.05 23:44:27",
-  "thread" : "pool-1-thread-1",
-  "event" : "onMessage",
-  "message" : "Message received: {\"correlation_id\":\"fcce6e8b-91a2-4983-9617-3def0e887e5c\",\"request_type\":\"form\",\"status\":0,\"response\":\"[form] неизвестный тип запроса\"}"
-}, {
-  "timestamp" : "2024.12.05 23:44:27",
-  "thread" : "pool-1-thread-2",
-  "event" : "onClose",
-  "message" : "Connection closed: Disconnected"
-}, {
-  "timestamp" : "2024.12.05 23:44:27",
-  "thread" : "pool-1-thread-1",
-  "event" : "onClose",
-  "message" : "Connection closed: Disconnected"
-}, {
-  "timestamp" : "2024.12.05 23:44:28",
-  "thread" : "pool-1-thread-1",
-  "event" : "onConnect",
-  "message" : "User connected: user_1"
-}, {
-  "timestamp" : "2024.12.05 23:44:28",
+  "timestamp" : "2024.12.06 00:07:43",
   "thread" : "pool-1-thread-2",
   "event" : "onConnect",
   "message" : "User connected: user_1"
 }, {
-  "timestamp" : "2024.12.05 23:44:28",
+  "timestamp" : "2024.12.06 00:07:43",
   "thread" : "pool-1-thread-1",
   "event" : "onMessage",
-  "message" : "Message received: {\"correlation_id\":\"fb3e43ca-4f63-475c-8010-0ce2011b0b01\",\"request_type\":\"form:\",\"status\":0,\"response\":\"[form:] неизвестный тип запроса\"}"
+  "message" : "Message received: {\"correlation_id\":\"23c6f478-26c9-4fb9-b778-2354a3a4afa1\",\"request_type\":\"form\",\"status\":0,\"response\":\"[form] неизвестный тип запроса\"}"
 }, {
-  "timestamp" : "2024.12.05 23:44:28",
+  "timestamp" : "2024.12.06 00:07:43",
   "thread" : "pool-1-thread-2",
   "event" : "onMessage",
-  "message" : "Message received: {\"correlation_id\":\"b8f87677-ab6a-4a88-b1c2-ad54ec22d9bf\",\"request_type\":\"form:\",\"status\":0,\"response\":\"[form:] неизвестный тип запроса\"}"
+  "message" : "Message received: {\"correlation_id\":\"188ada27-a342-421b-8b92-c69d3a387869\",\"request_type\":\"form\",\"status\":0,\"response\":\"[form] неизвестный тип запроса\"}"
 }, {
-  "timestamp" : "2024.12.05 23:44:28",
+  "timestamp" : "2024.12.06 00:07:44",
   "thread" : "pool-1-thread-2",
   "event" : "onClose",
   "message" : "Connection closed: Disconnected"
 }, {
-  "timestamp" : "2024.12.05 23:44:28",
+  "timestamp" : "2024.12.06 00:07:44",
   "thread" : "pool-1-thread-1",
+  "event" : "onClose",
+  "message" : "Connection closed: Disconnected"
+}, {
+  "timestamp" : "2024.12.06 00:07:45",
+  "thread" : "pool-1-thread-1",
+  "event" : "onConnect",
+  "message" : "User connected: user_1"
+}, {
+  "timestamp" : "2024.12.06 00:07:45",
+  "thread" : "pool-1-thread-2",
+  "event" : "onConnect",
+  "message" : "User connected: user_1"
+}, {
+  "timestamp" : "2024.12.06 00:07:45",
+  "thread" : "pool-1-thread-1",
+  "event" : "onMessage",
+  "message" : "Message received: {\"correlation_id\":\"e63d53d3-23c3-468e-8948-67dd361a739a\",\"request_type\":\"form:\",\"status\":0,\"response\":\"[form:] неизвестный тип запроса\"}"
+}, {
+  "timestamp" : "2024.12.06 00:07:45",
+  "thread" : "pool-1-thread-2",
+  "event" : "onMessage",
+  "message" : "Message received: {\"correlation_id\":\"79f4b58f-f378-40dd-b4c4-4f8ef8af2781\",\"request_type\":\"form:\",\"status\":0,\"response\":\"[form:] неизвестный тип запроса\"}"
+}, {
+  "timestamp" : "2024.12.06 00:07:45",
+  "thread" : "pool-1-thread-1",
+  "event" : "onClose",
+  "message" : "Connection closed: Disconnected"
+}, {
+  "timestamp" : "2024.12.06 00:07:45",
+  "thread" : "pool-1-thread-2",
   "event" : "onClose",
   "message" : "Connection closed: Disconnected"
 } ]
