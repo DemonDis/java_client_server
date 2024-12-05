@@ -1,103 +1,127 @@
 package loader;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-
-import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.DOMException;
-
 import org.xml.sax.SAXException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 
 public class MetricXmlMerge {
-    private JsonArray users;
-    private String url_arm;
+    private final JsonArray users;
+    private final String urlArm;
 
-    public MetricXmlMerge(JsonArray users, String url_arm) {
+    public MetricXmlMerge(JsonArray users, String urlArm) {
         this.users = users;
-        this.url_arm = url_arm;
+        this.urlArm = urlArm;
     }
 
-    public void saveXmlMerge() throws ParserConfigurationException, TransformerException, TransformerFactoryConfigurationError, DOMException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss");
-        LocalDateTime nowTime = LocalDateTime.now();
-        String timeString = nowTime.format(formatter);
-        String timeServer = nowTime.atZone(ZoneId.of("+07:00")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss").withZone(ZoneOffset.UTC));
-        
+    public void saveXmlMerge() {
+        String currentTime = getCurrentTime();
+        String timeServer = getTimeServer();
+
         String filePath = "./report/_index.xml";
         File file = new File(filePath);
 
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-        if (file.exists()) { file.delete(); } 
+        // Создание нового XML-документа
         try (FileOutputStream output = new FileOutputStream(filePath)) {
-
-            Document doc = docBuilder.newDocument();
-
+            Document doc = createXmlDocument();
             Node root = doc.getDocumentElement();
-            Node xsl_file = doc.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"_merge_.xsl\"");
-            doc.insertBefore(xsl_file, root);
 
-            Element list = doc.createElement("list");
-            doc.appendChild(list);
-            list.setAttribute("url", url_arm);
-            list.setAttribute("date", timeServer);
+            // Добавление инструкции по стилю
+            addProcessingInstruction(doc, root);
 
-        for (int i = 0; i < users.size() ; i++) {
-            JsonObject usersObject = users.getJsonObject(i);
-            String userString = usersObject.getString("user");
+            // Добавление корневого элемента <list>
+            Element listElement = createListElement(doc, currentTime, timeServer);
+            doc.appendChild(listElement);
 
-            Element user = doc.createElement("entry");
-            user.setAttribute("name", userString + "_result.xml");
-            list.appendChild(user);
-        }
+            // Добавление элементов <entry> для каждого пользователя
+            addUserEntries(doc, listElement);
+
+            // Запись XML в файл
             writeXml(doc, output);
-        } catch (IOException e) {  e.printStackTrace(); }
-        
+        } catch (IOException | TransformerException | SAXException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void writeXml(Document doc, OutputStream output) throws TransformerFactoryConfigurationError, TransformerException {
-        try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    private String getCurrentTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss"));
+    }
 
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(output);
-            transformer.transform(source, result); 
-        } catch (Exception e) { System.out.println(e); }
+    private String getTimeServer() {
+        return LocalDateTime.now()
+                .atZone(ZoneId.of("+07:00"))
+                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss"));
+    }
+
+    private Document createXmlDocument() throws SAXException, IOException {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.newDocument();
+        } catch (Exception e) {
+            throw new SAXException("Error creating XML document", e);
+        }
+    }
+
+    private void addProcessingInstruction(Document doc, Node root) {
+        Node xslFile = doc.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"_merge_.xsl\"");
+        doc.insertBefore(xslFile, root);
+    }
+
+    private Element createListElement(Document doc, String currentTime, String timeServer) {
+        Element list = doc.createElement("list");
+        list.setAttribute("url", urlArm);
+        list.setAttribute("date", timeServer);
+        return list;
+    }
+
+    private void addUserEntries(Document doc, Element listElement) {
+        for (int i = 0; i < users.size(); i++) {
+            JsonObject userObject = users.getJsonObject(i);
+            String userString = userObject.getString("user");
+
+            Element userEntry = doc.createElement("entry");
+            userEntry.setAttribute("name", userString + "_result.xml");
+            listElement.appendChild(userEntry);
+        }
+    }
+
+    private void writeXml(Document doc, OutputStream output) throws TransformerException {
+        Transformer transformer = createTransformer();
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(output);
+        transformer.transform(source, result);
+    }
+
+    private Transformer createTransformer() throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+
+        // Настройка свойств трансформера для красивого вывода
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+        return transformer;
     }
 }

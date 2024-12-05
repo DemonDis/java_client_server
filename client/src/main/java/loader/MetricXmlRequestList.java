@@ -2,7 +2,9 @@ package loader;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,9 +32,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 public class MetricXmlRequestList {
     private JsonArray requestT;
@@ -44,6 +48,7 @@ public class MetricXmlRequestList {
     public void saveXmlMergeRequestList() throws ParserConfigurationException, TransformerException, TransformerFactoryConfigurationError, DOMException {
         String filePath = "./report/_request.xml";
         File file = new File(filePath);
+
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -76,7 +81,7 @@ public class MetricXmlRequestList {
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "0");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");

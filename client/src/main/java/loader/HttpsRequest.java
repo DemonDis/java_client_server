@@ -114,12 +114,7 @@ class HttpsRequest implements Runnable {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             LOG.info("[BR] {}", br);
-            // JsonReader reader = Json.createReader(br);
-            // JsonObject obj = reader.readObject();
-
-            // String sessionId = obj.getString("session_id");
-            // reader.close();
-            // Выбор role
+            
             URL url_2 = new URL(urlARMRole);
             HttpsURLConnection con_2 = (HttpsURLConnection) url_2.openConnection();
             con_2.setRequestMethod("POST");
