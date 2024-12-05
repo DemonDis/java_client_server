@@ -2,14 +2,12 @@ package loader;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.util.concurrent.Future;
 import java.util.UUID;
 
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.BufferedReader;
 
 import java.net.URL;
@@ -20,12 +18,9 @@ import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonObject;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.log.Log;
@@ -35,7 +30,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 import java.security.cert.X509Certificate;
-
 class HttpsRequest implements Runnable {
     private String name;
     private String request_type;
@@ -78,13 +72,16 @@ class HttpsRequest implements Runnable {
         TrustManager[] trustAllCerts = new TrustManager[] { new TrustAllCertificatesManager() };
 
         try {
+            // Настройка SSL для обычных HTTPS соединений
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HostnameVerifier allHostsValid = new TrustAllHostsVerifier();
+
+            // Настройка HostnameVerifier для HTTPS соединений
+            TrustAllHostsVerifier allHostsValid = new TrustAllHostsVerifier();
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
-            // Login
+            // Login запрос
             URL url = new URL(urlARMLogin);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
@@ -107,12 +104,12 @@ class HttpsRequest implements Runnable {
             BufferedReader br = new BufferedReader(isr);
             LOG.info("[BR] {}", br);
 
+            // Роль запроса
             URL url_2 = new URL(urlARMRole);
             HttpsURLConnection con_2 = (HttpsURLConnection) url_2.openConnection();
             con_2.setRequestMethod("POST");
             con_2.setRequestProperty("Content-Type", "application/json; utf-8");
             con_2.setConnectTimeout(10000);
-
             con_2.setDoOutput(true);
             con_2.setDoInput(true);
 
@@ -135,9 +132,9 @@ class HttpsRequest implements Runnable {
 
             String tokenJWT = obj_2.getString("token");
 
-            // Socket
+            // Настройка WebSocket через Jetty
             SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-            sslContextFactory.setTrustAll(true);
+            sslContextFactory.setTrustAll(true); // Доверять всем сертификатам
             sslContextFactory.setEndpointIdentificationAlgorithm("HTTPS");
             HttpClient httpClient = new HttpClient(sslContextFactory);
 
@@ -171,23 +168,5 @@ class HttpsRequest implements Runnable {
 
     public synchronized Exception getException() {
         return ex;
-    }
-}
-
-// Класс для TrustManager, который доверяет всем сертификатам
-class TrustAllCertificatesManager implements X509TrustManager {
-    public X509Certificate[] getAcceptedIssuers() {
-        return null;
-    }
-
-    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-
-    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-}
-
-// Класс для HostnameVerifier, который доверяет всем хостам
-class TrustAllHostsVerifier implements HostnameVerifier {
-    public boolean verify(String hostname, SSLSession session) {
-        return true;
     }
 }
