@@ -61,9 +61,9 @@ class HttpsRequest implements Runnable {
     static final Logger LOG = Log.getLogger(HttpsRequest.class);
 
     public void run()  {
-        ex=null;
-        String urlARMLogin= "https://localhost:3002/v1/login";
-        String urlARMRole = "https://localhost:3002/v1/role ";
+        ex = null;
+        String urlARMLogin = "https://localhost:3002/v1/login";
+        String urlARMRole = "https://localhost:3002/v1/role";
         String urlARMSocket = "wss://localhost:3001/v1/wss";
 
         JsonObject login = Json.createObjectBuilder()
@@ -75,23 +75,15 @@ class HttpsRequest implements Runnable {
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
 
-        TrustManager[] trustAllCerts = new TrustManager[] {
-            new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-            }
-        };
+        TrustManager[] trustAllCerts = new TrustManager[] { new TrustAllCertificatesManager() };
 
         try {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) { return true; }
-            };
+            HostnameVerifier allHostsValid = new TrustAllHostsVerifier();
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-            
+
             // Login
             URL url = new URL(urlARMLogin);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
@@ -105,7 +97,7 @@ class HttpsRequest implements Runnable {
             LocalDateTime startTime = LocalDateTime.now();
             String startTimeString = startTime.format(formatter);
 
-            try(OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
+            try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
                 LOG.info("🧭 [TIME START] {}; user = {}; START = {}", Thread.currentThread().getName(), this.name, startTimeString);
                 writer.write(login.toString());
             }
@@ -114,7 +106,7 @@ class HttpsRequest implements Runnable {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             LOG.info("[BR] {}", br);
-            
+
             URL url_2 = new URL(urlARMRole);
             HttpsURLConnection con_2 = (HttpsURLConnection) url_2.openConnection();
             con_2.setRequestMethod("POST");
@@ -129,7 +121,7 @@ class HttpsRequest implements Runnable {
                 .add("session_id", "sessionId")
             .build();
 
-            try(OutputStreamWriter writer = new OutputStreamWriter(con_2.getOutputStream())) {
+            try (OutputStreamWriter writer = new OutputStreamWriter(con_2.getOutputStream())) {
                 writer.write(role.toString());
             }
 
@@ -140,7 +132,7 @@ class HttpsRequest implements Runnable {
             JsonReader reader_2 = Json.createReader(br_2);
             JsonObject obj_2 = reader_2.readObject();
             reader_2.close();
-            
+
             String tokenJWT = obj_2.getString("token");
 
             // Socket
@@ -148,14 +140,14 @@ class HttpsRequest implements Runnable {
             sslContextFactory.setTrustAll(true);
             sslContextFactory.setEndpointIdentificationAlgorithm("HTTPS");
             HttpClient httpClient = new HttpClient(sslContextFactory);
-            
+
             try {
                 httpClient.start();
                 WebSocketClient client = new WebSocketClient(httpClient);
                 client.start();
 
                 SocketRequest socket = new SocketRequest(
-                    this.name, startTime, Thread.currentThread().getName(), 
+                    this.name, startTime, Thread.currentThread().getName(),
                     this.url_arm, request_name, max_time,
                     httpClient, client
                 );
@@ -167,7 +159,35 @@ class HttpsRequest implements Runnable {
                 session.getRemote().sendString(request_socket);
                 LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {}\n", Thread.currentThread().getName(), this.name, request_type);
 
-            } catch (Throwable t) { LOG.warn(t); }
-        } catch (Exception e) { synchronized(this) { this.ex = ex; } }
-    } public synchronized Exception getException() { return ex; }
+            } catch (Throwable t) {
+                LOG.warn(t);
+            }
+        } catch (Exception e) {
+            synchronized (this) {
+                this.ex = e;
+            }
+        }
+    }
+
+    public synchronized Exception getException() {
+        return ex;
+    }
+}
+
+// Класс для TrustManager, который доверяет всем сертификатам
+class TrustAllCertificatesManager implements X509TrustManager {
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
+    }
+
+    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+
+    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+}
+
+// Класс для HostnameVerifier, который доверяет всем хостам
+class TrustAllHostsVerifier implements HostnameVerifier {
+    public boolean verify(String hostname, SSLSession session) {
+        return true;
+    }
 }
