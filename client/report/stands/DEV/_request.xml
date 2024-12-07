@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<list>
+    <url name="form:1" quantity="6" request="#1 Запрос">
+        <user total="6">client</user>
+    </url>
+    <url name="form:2" quantity="6" request="#1 Запрос">
+        <user total="6">client</user>
+    </url>
+</list>

@@ -1,97 +1,95 @@
 package loader;
 
-import java.io.*;
-import java.util.concurrent.*;
-import javax.json.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Файл: Metric.java
+ * Описание: Метрики отклика API
+ * Права (Copyright): (C) 2024
+ *
+ * @author Shibikin D
+ * @since 03.12.2024
+ */
 
 public class Metric {
 
     public static void main(String[] args) throws Exception {
-        // Загружаем конфигурацию из файла
-        JsonObject config = loadConfig("./report/_conf.json");
+        InputStream configFile = new FileInputStream("./report/_conf.json");
+        JsonReader reader = Json.createReader(configFile);
+        JsonObject configFileObject = reader.readObject();
+        reader.close();
 
-        // Подготовка объектов
+        JsonArray usersArray = configFileObject.getJsonArray("users");
+        JsonArray requestsArray = configFileObject.getJsonArray("requests");
+        String standInfo = configFileObject.getString("stand_info");
+
+        InputStream standFile = new FileInputStream("./report/__" + standInfo + ".json");
+        JsonReader readerStand = Json.createReader(standFile);
+        JsonObject standFileObject = readerStand.readObject();
+        readerStand.close();
+
+        JsonObject clientInfo = standFileObject.getJsonObject("client_info");
+        JsonObject orgInfo = standFileObject.getJsonObject("org_info");
+        String url = standFileObject.getString("url");
+        String stand = standFileObject.getString("stand");
+
         FileWork fileWork = new FileWork();
-        fileWork.doFile();  // Предполагаем, что это не требует оптимизации
+        fileWork.fileRun();
 
-        // Получаем массивы пользователей и запросов
-        JsonArray usersArray = config.getJsonArray("users");
-        JsonArray requestsArray = config.getJsonArray("request");
-
-        // Используем ExecutorService для параллельных запросов
         ExecutorService executorService = Executors.newFixedThreadPool(usersArray.size());
 
-        try {
-            // Для каждого запроса
-            for (int i = 0; i < requestsArray.size(); i++) {
-                JsonObject requestObject = requestsArray.getJsonObject(i);
-                String requestType = requestObject.getString("request_type");
-                String name = requestObject.getString("name");
-                String maxTime = requestObject.getString("max_time");
-                String requestBody = requestObject.getString("request_body");
-                JsonNumber timeout = requestObject.getJsonNumber("timeout");
+        for (int i = 0; i < requestsArray.size(); i++) {
+            JsonObject requestObject = requestsArray.getJsonObject(i);
+            String requestType = requestObject.getString("request_type").intern();
+            String name = requestObject.getString("name");
+            String maxTime = requestObject.getString("max_time");
+            String requestBody = requestObject.getString("request_body");
+            JsonNumber timeout = requestObject.getJsonNumber("timeout");
+            JsonNumber rerun = requestObject.getJsonNumber("rerun");
+            JsonArray addRequest = requestObject.getJsonArray("add_request");
+            JsonArray userRequestArray = requestObject.getJsonArray("users");
 
-                // Отправляем запросы для каждого пользователя
-                handleRequestsForUsers(usersArray, config, requestType, name, maxTime, requestBody, timeout, executorService);
+            for (int j = 0; j < usersArray.size(); j++) {
+                JsonObject userObject = usersArray.getJsonObject(j);
+                String userString = userObject.getString("user");
+                String userStringIntern = (new String(userString.substring(0, userString.lastIndexOf('_')))).intern();
+                String roleString = userObject.getString("role");
+                String password = userObject.getString("password");
 
-                // Задержка между запросами
-                System.out.println("📢 [TIMEOUT] " + timeout.longValue());
-                TimeUnit.SECONDS.sleep(timeout.longValue());
-            }
-
-        } finally {
-            // Завершаем работу ExecutorService
-            shutdownExecutor(executorService);
-        }
-
-        // Создание страницы с метриками (по завершению работы)
-        MetricXmlMainPage metricXmlMainPage = new MetricXmlMainPage();
-        metricXmlMainPage.createPage();
-
-        // Выход из программы
-        System.out.println("⛔ Программа завершена ⛔");
-        System.exit(0);  // Корректный выход из программы
-    }
-
-    private static JsonObject loadConfig(String filePath) throws IOException {
-        // Использование try-with-resources для автоматического закрытия ресурсов
-        try (InputStream configFile = new FileInputStream(filePath);
-             JsonReader reader = Json.createReader(configFile)) {
-            return reader.readObject();
-        }
-    }
-
-    private static void handleRequestsForUsers(JsonArray usersArray, JsonObject config, String requestType,
-                                                String name, String maxTime, String requestBody,
-                                                JsonNumber timeout, ExecutorService executorService) {
-        // Для каждого пользователя выполняем запрос
-        for (int j = 0; j < usersArray.size(); j++) {
-            JsonObject userObject = usersArray.getJsonObject(j);
-            String user = userObject.getString("user");
-            String role = userObject.getString("role");
-            String password = userObject.getString("password");
-
-            // Отправка запроса в отдельном потоке
-            executorService.submit(new HttpsRequest(
-                user, requestType, config.getString("url"), name, maxTime,
-                requestBody, password, role
-            ));
-        }
-    }
-
-    private static void shutdownExecutor(ExecutorService executorService) {
-        // Завершаем работу ExecutorService
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                    System.err.println("Executor did not terminate in time");
+                for (int m = 0; m < userRequestArray.size(); m++) {
+                    String userRequestStringIntern = (new String(userRequestArray.getString(m))).intern();
+                    if (userStringIntern.equals(userRequestStringIntern)) {
+                        executorService.execute(
+                            new HttpsRequest(
+                                userString, requestType, url,
+                                name, maxTime, requestBody, password, 
+                                roleString, addRequest, rerun, clientInfo, 
+                                orgInfo, stand
+                            )
+                        );
+                    }
+                }
+                if (j == usersArray.size() - 1) {
+                    System.out.println("\n");
+                    System.out.println("[TIMEOUT] " + timeout.longValue() + " секунд");
+                    executorService.awaitTermination(timeout.longValue(), TimeUnit.SECONDS);
                 }
             }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-            Thread.currentThread().interrupt();
+            if (i == requestsArray.size() - 1) {
+                MetricXmlMainPage metricXmlMainPage = new MetricXmlMainPage();
+                metricXmlMainPage.createPage();
+                System.out.println("\n END");
+                System.exit(0);
+            }
         }
     }
 }

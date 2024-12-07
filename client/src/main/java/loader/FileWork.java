@@ -1,92 +1,154 @@
 package loader;
 
 import java.io.*;
-import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.zip.*;
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+
 import org.apache.tools.ant.DirectoryScanner;
+import org.w3c.dom.DOMException;
+
+/**
+ * Файл: FileWork.java
+ * Описание: Работа с каталогами и файлами до запуска
+ * Права (Copyright): (C) 2024
+ *
+ * @author Shibikin D
+ * @since 03.12.2024
+ */
 
 public class FileWork {
-    public void doFile() throws Exception {
+    /**
+     * Основной метод для работы с файлами и каталогами.
+     */
+    public void fileRun() throws IOException {
+        JsonObject configFileObject = readConfigFile("./report/_conf.json");
+        JsonArray usersArray = configFileObject.getJsonArray("users");
+        JsonArray requestsArray = configFileObject.getJsonArray("requests");
+        String standInfo = configFileObject.getString("stand_info");
 
-        // Используем try-with-resources для автоматического закрытия потока
-        try (InputStream configFile = new FileInputStream("./report/_conf.json");
+        JsonObject standFileObject = readConfigFile("./report/__" + standInfo + ".json");
+        String standName = standFileObject.getString("stand");
+
+        // Создаем или очищаем директорию стенда
+        File standDirectory = new File("./report/stands/" + standName);
+        if (!standDirectory.exists()) {
+            // Если папка не существует, создаем её
+            standDirectory.mkdirs();
+        }
+        
+        // Очищаем содержимое папки
+        clearDirectory(standDirectory);
+
+        // Удаляем старые XML файлы, если они существуют
+        deleteXmlFiles(standDirectory);
+
+        // Создаем папку заново (можно убрать, если не нужно создавать снова)
+        standDirectory.mkdir();
+
+        // Обрабатываем .txt файлы в каталоге log
+        cleanUpLogDirectory();
+
+        // Выполняем дальнейшую обработку с пользователями и запросами
+        MetricXmlMerge metricXmlMerge = new MetricXmlMerge(
+            usersArray, 
+            standFileObject.getString("url"),
+            standFileObject.getString("stand"), 
+            standFileObject.getString("background")
+        );
+        try {
+            metricXmlMerge.saveXmlMerge();
+        } catch (DOMException | ParserConfigurationException | TransformerException
+                | TransformerFactoryConfigurationError | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        MetricXmlRequestList metricXmlRequestList = new MetricXmlRequestList(
+            requestsArray, 
+            standFileObject.getString("stand"), 
+            usersArray
+        );
+        try {
+            metricXmlRequestList.saveXmlMergeRequestList();
+        } catch (DOMException | ParserConfigurationException | TransformerException
+                | TransformerFactoryConfigurationError | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Чтение JSON файла.
+     * 
+     * @param filePath Путь к JSON файлу
+     * @return JsonObject, содержащий данные из файла
+     * @throws IOException В случае ошибок при чтении файла
+     */
+    private JsonObject readConfigFile(String filePath) throws IOException {
+        try (InputStream configFile = new FileInputStream(filePath);
              JsonReader reader = Json.createReader(configFile)) {
-            
-            JsonObject configFileObject = reader.readObject();
-            
-            JsonArray usersArray = configFileObject.getJsonArray("users");
-            JsonArray requestsArray = configFileObject.getJsonArray("request");
+            return reader.readObject();
+        }
+    }
 
-            // Сканирование файлов
-            DirectoryScanner scanner = new DirectoryScanner();
-            scanner.setIncludes(new String[]{"**/*.xml"});
-            scanner.setBasedir(new File("./report"));
-            scanner.setCaseSensitive(false);
-            scanner.scan();
-            String[] files = scanner.getIncludedFiles();
-
-            // Получаем текущую дату и время для имени архива
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
-            String currentDateTime = LocalDateTime.now().format(formatter);
-
-            // Создаем архив с найденными XML файлами, включая текущую дату в имени
-            File zipFile = new File("./report/backup_" + currentDateTime + ".zip");
-            try (FileOutputStream fos = new FileOutputStream(zipFile);
-                 ZipOutputStream zos = new ZipOutputStream(fos)) {
-
-                for (String file : files) {
-                    Path filePath = Paths.get("./report", file);
-                    if (Files.exists(filePath)) {
-                        // Добавляем файл в архив
-                        try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
-                            ZipEntry zipEntry = new ZipEntry(file);
-                            zos.putNextEntry(zipEntry);
-                            
-                            byte[] buffer = new byte[1024];
-                            int length;
-                            while ((length = fis.read(buffer)) >= 0) {
-                                zos.write(buffer, 0, length);
-                            }
-                            zos.closeEntry();
-                            System.out.println("Добавлен в архив файл: " + filePath);
-                        } catch (IOException e) {
-                            System.err.println("Ошибка при архивировании файла: " + filePath);
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("Ошибка при создании архива: " + e.getMessage());
-            }
-
-            // Удаляем все найденные XML файлы после архивирования
-            for (String file : files) {
-                Path filePath = Paths.get("./report", file);
-                if (Files.exists(filePath)) {
-                    try {
-                        Files.delete(filePath);
-                        System.out.println("Удалён файл: " + filePath);
-                    } catch (IOException e) {
-                        System.err.println("Ошибка при удалении файла: " + filePath);
-                    }
+    /**
+     * Очищение директории от файлов и папок.
+     * 
+     * @param directory Директория для очистки
+     */
+    private void clearDirectory(File directory) {
+        if (directory.exists() && directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                if (file.isDirectory()) {
+                    clearDirectory(file); // Рекурсивно очищаем папки
+                } else {
+                    file.delete(); // Удаляем файлы
                 }
             }
+        }
+    }
 
-            // Мержим XML и генерируем список запросов
-            try {
-                MetricXmlMerge metricXmlMerge = new MetricXmlMerge(usersArray, configFileObject.getString("url"));
-                metricXmlMerge.saveXmlMerge();
+    /**
+     * Удаление старых .xml файлов в каталоге стенда.
+     * 
+     * @param standDirectory Каталог стенда
+     */
+    private void deleteXmlFiles(File standDirectory) {
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(new String[]{"**/*.xml"});
+        scanner.setBasedir(standDirectory);
+        scanner.setCaseSensitive(false);
+        scanner.scan();
 
-                MetricXmlRequestList metricXmlRequestList = new MetricXmlRequestList(requestsArray);
-                metricXmlRequestList.saveXmlMergeRequestList();
-            } catch (ParserConfigurationException | TransformerException e) {
-                // Логируем исключения
-                System.err.println("Ошибка при обработке XML: " + e.getMessage());
-                e.printStackTrace();
+        // Удаляем все найденные XML файлы
+        for (String file : scanner.getIncludedFiles()) {
+            File fileToDelete = new File(standDirectory, file);
+            if (fileToDelete.exists()) {
+                fileToDelete.delete(); // Удаляем файл
+            }
+        }
+    }
+
+    /**
+     * Очистка директории логов от .txt файлов.
+     */
+    private void cleanUpLogDirectory() {
+        File logDirectory = new File("./report/log");
+        DirectoryScanner scannerTxt = new DirectoryScanner();
+        scannerTxt.setIncludes(new String[]{"**/*.txt"});
+        scannerTxt.setBasedir(logDirectory);
+        scannerTxt.setCaseSensitive(false);
+        scannerTxt.scan();
+
+        for (String file : scannerTxt.getIncludedFiles()) {
+            File fileToDelete = new File(logDirectory, file);
+            if (fileToDelete.exists()) {
+                fileToDelete.delete();
             }
         }
     }
