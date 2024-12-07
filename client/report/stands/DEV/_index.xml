@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?xml-stylesheet type="text/xsl" href="../../merge_xsl"?><list background="xx" date="07.12.2024, 20:27:28" stand="DEV" url="l">
+<?xml-stylesheet type="text/xsl" href="../../merge_xsl"?><list background="xx" date="08.12.2024, 04:31:02" stand="DEV" url="l">
     <entry name="client_1_result.xml"/>
     <entry name="client_2_result.xml"/>
     <entry name="client_3_result.xml"/>
     <entry name="client_4_result.xml"/>
     <entry name="client_5_result.xml"/>
-    <entry name="client_6_result.xml"/>
+    <entry name="cl_6_result.xml"/>
+    <entry name="cls_6_result.xml"/>
 </list>
