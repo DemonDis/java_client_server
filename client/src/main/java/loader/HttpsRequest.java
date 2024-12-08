@@ -1,17 +1,11 @@
 package loader;
 
 import java.util.UUID;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.net.URL;
-import java.net.URI;
-import java.net.URLConnection;
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonObject;
@@ -21,19 +15,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.util.Promise;
-import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.log.Logger;
-import org.eclipse.jetty.websocket.api.Session;
 
 public class HttpsRequest implements Runnable {
     private String name;
