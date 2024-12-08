@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <list>
-    <url name="form:1" quantity="6" request="#1 Запрос">
-        <user total="5">client</user>
-        <user total="1">cls</user>
-    </url>
-    <url name="form:2" quantity="5" request="#1 Запрос">
-        <user total="5">client</user>
+    <url name="form:1" quantity="1" request="#1 Запрос">
+        <user total="1">role</user>
     </url>
 </list>

@@ -9,10 +9,10 @@ package loader;
 * @since 03.12.2024
 */
 
-class GlobalStore {
+public class GlobalStore {
     public static String id;
-    public static String wallet _id;
-    public static String form id;
-    public static String operation id;
-    public static String message_id;
+    public static String walletId;
+    public static String formId;
+    public static String operationId;
+    public static String messageId;
 }

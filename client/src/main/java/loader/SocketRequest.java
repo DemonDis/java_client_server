@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonNumber;
 
@@ -56,6 +57,12 @@ public class SocketRequest {
         this.httpClient = httpClient;
         this.client = client;
     }
+
+    // public SocketRequest(HttpClient httpClient2, WebSocketClient client2, String name2, LocalDateTime now, String name3,
+    //         String urlArm2, String requestName2, String maxTime2, JsonArray addRequest, String requestType,
+    //         String stand, JsonNumber rerun) {
+    //     //TODO Auto-generated constructor stub
+    // }
 
     @OnWebSocketConnect
     public void onConnect(Session sess) {
