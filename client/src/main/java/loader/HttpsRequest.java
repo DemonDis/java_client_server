@@ -2,28 +2,22 @@ package loader;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.util.concurrent.Future;
 import java.util.UUID;
-
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.InputStream;
 import java.io.BufferedReader;
-
 import java.net.URL;
 import java.net.URI;
-
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonObject;
 import javax.json.JsonNumber;
 import javax.json.JsonArray;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -179,24 +173,24 @@ class HttpsRequest implements Runnable {
                 Future<Session> fut = client.connect(socket, URI.create(urlARMSocket));
 
                 for (int i = 0; i < rerun.longValue(); i++) {
-                // Дополнительные запросы
-                // if (add_request.size() > 0) {
-
                     String request_socket = String.format(request_body, uuidString, request_type, tokenJWT);
                     Session session = fut.get();
                     session.getRemote().sendString(request_socket);
-                    LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {}\n", Thread.currentThread().getName(), this.name, request_type);
+                    LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {} (run # {})\n", 
+                            Thread.currentThread().getName(), this.name, request_type, i + 1);
                 }
 
-                // Основной запрос
-                // if (add_request.size() >= 0) {
-                //     String request_socket = String.format(request_body, uuidString, request_type, tokenJWT);
-                //     Session session = fut.get();
-                //     session.getRemote().sendString(request_socket);
-                //     LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {}\n", Thread.currentThread().getName(), this.name, request_type);
-                // }
-        
-            } catch (Throwable t) { LOG.warn(t); } 
-        } catch (Exception e) { synchronized(this) { this.ex = ex; } }
-    } public synchronized Exception getException() { return ex; }
+            } catch (Throwable t) { 
+                LOG.warn(t); 
+            }
+        } catch (Exception e) { 
+            synchronized(this) { 
+                this.ex = e; 
+            } 
+        }
+    }
+
+    public synchronized Exception getException() { 
+        return ex; 
+    }
 }

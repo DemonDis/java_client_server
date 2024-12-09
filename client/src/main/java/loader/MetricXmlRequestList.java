@@ -35,15 +35,12 @@ public class MetricXmlRequestList {
 
         JsonArrayBuilder jsonArrayCount = Json.createArrayBuilder();
         JsonArrayBuilder jsonArrayUsersSecondLevel = Json.createArrayBuilder();
-        JsonObjectBuilder jsonObjectUser = Json.createObjectBuilder();
-        JsonObjectBuilder jsonObjectCount = Json.createObjectBuilder();
 
         // Проходим по всем запросам
         for (int i = 0; i < requestT.size(); i++) {
             JsonObject requestObject = requestT.getJsonObject(i);
             JsonArray userRequestArray = requestObject.getJsonArray("users");
             int count = 0;
-
             Map<String, Integer> userMap = new HashMap<>();
 
             // Для каждого пользователя проверяем, сколько раз он встречается
@@ -61,20 +58,22 @@ public class MetricXmlRequestList {
                 }
             }
 
-            // Добавляем пользователей и их количество в jsonArrayFistLevel
+            // Добавляем пользователей и их количество в jsonArrayUsersSecondLevel
             JsonArrayBuilder jsonArrayFistLevel = Json.createArrayBuilder();
             for (Map.Entry<String, Integer> entry : userMap.entrySet()) {
-                jsonObjectUser.add("user", entry.getKey());
-                jsonObjectUser.add("total", entry.getValue());
-                jsonArrayFistLevel.add(jsonObjectUser.build());
+                JsonObject userObject = Json.createObjectBuilder()
+                    .add("user", entry.getKey())
+                    .add("total", entry.getValue())
+                    .build();
+                jsonArrayFistLevel.add(userObject);
             }
 
             jsonArrayUsersSecondLevel.add(jsonArrayFistLevel.build());
             userMap.clear();
 
             // Строим объект для кол-ва пользователей
-            jsonObjectCount.add("col", String.valueOf(count));
-            jsonArrayCount.add(jsonObjectCount.build());
+            JsonObject countObject = Json.createObjectBuilder().add("col", String.valueOf(count)).build();
+            jsonArrayCount.add(countObject);
         }
 
         JsonArray newArrayCount = jsonArrayCount.build();
@@ -98,7 +97,7 @@ public class MetricXmlRequestList {
             for (int i = 0; i < requestT.size(); i++) {
                 JsonObject requestObject = requestT.getJsonObject(i);
                 JsonArray requestLevel = array.getJsonArray(i);
-                String request_type = requestObject.getString("request_type");
+                String requestType = requestObject.getString("request_type");
                 String name = requestObject.getString("name");
 
                 JsonObject requestForCol = newArrayCount.getJsonObject(i);
@@ -106,29 +105,34 @@ public class MetricXmlRequestList {
 
                 // Добавляем элементы URL в XML
                 Element userElement = doc.createElement("url");
-                userElement.setAttribute("name", request_type);
+                userElement.setAttribute("name", requestType);
                 userElement.setAttribute("request", name);
                 userElement.setAttribute("quantity", col);
                 list.appendChild(userElement);
 
                 // Добавляем пользователей к каждому запросу
-                JsonArray usersArray = requestObject.getJsonArray("users");
-                for (int j = 0; j < usersArray.size(); j++) {
-                    JsonObject userLevel = requestLevel.getJsonObject(j);
-                    String userName = userLevel.getString("user");
-                    JsonNumber total = userLevel.getJsonNumber("total");
-
-                    Element users = doc.createElement("user");
-                    users.setTextContent(userName);
-                    users.setAttribute("total", total.toString());
-                    userElement.appendChild(users);
-                }
+                addUsersToRequest(doc, requestLevel, userElement);
             }
 
             writeXml(doc, output);
         }
     }
 
+    // Метод для добавления пользователей к элементу запроса
+    private void addUsersToRequest(Document doc, JsonArray requestLevel, Element userElement) {
+        for (int j = 0; j < requestLevel.size(); j++) {
+            JsonObject userLevel = requestLevel.getJsonObject(j);
+            String userName = userLevel.getString("user");
+            JsonNumber total = userLevel.getJsonNumber("total");
+
+            Element users = doc.createElement("user");
+            users.setTextContent(userName);
+            users.setAttribute("total", total.toString());
+            userElement.appendChild(users);
+        }
+    }
+
+    // Метод для записи XML в файл
     private static void writeXml(Document doc, OutputStream output) throws TransformerFactoryConfigurationError, TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();

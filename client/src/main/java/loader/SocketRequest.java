@@ -42,6 +42,9 @@ public class SocketRequest {
     private String requestStatic;
     private String stand;
 
+    static final Logger LOG = Log.getLogger(SocketRequest.class);
+    private GlobalStore globalStore = new GlobalStore();
+
     public SocketRequest(HttpClient httpClient, WebSocketClient client, String name, LocalDateTime startTime,
                          String threadNumber, String urlArm, String requestName, String maxTime,
                          JsonArray addRequest, String requestStatic, String stand, JsonNumber rerun) {
@@ -59,79 +62,86 @@ public class SocketRequest {
         this.rerun = rerun;
     }
 
-    static final Logger LOG = Log.getLogger(SocketRequest.class);
-    GlobalStore globalStore = new GlobalStore();
-
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        LOG.info("onConnect: user = {}", this.name);
+        LOG.info("Подключение: пользователь = {}", this.name);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        LOG.info("onClose: thread = {}; user = {}; status = {}; reason = {}", threadNumber, this.name, statusCode, reason);
+        LOG.info("Закрытие: поток = {}; пользователь = {}; статус = {}; причина = {}", threadNumber, this.name, statusCode, reason);
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        LOG.warn(cause);
+        LOG.warn("Ошибка WebSocket: {}", cause.getMessage(), cause);
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) throws ParserConfigurationException, TransformerException {
-        // LOG.info("[MSG]: {}", msg);
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = UUID.randomUUID();  // Генерация уникального идентификатора для запроса
         String uuidString = uuid.toString();
 
-        JsonReader reader = Json.createReader(new StringReader(msg));
-        JsonObject obj = reader.readObject();
-        reader.close();
+        // Чтение и парсинг JSON сообщения
+        try (JsonReader reader = Json.createReader(new StringReader(msg))) {
+            JsonObject obj = reader.readObject();
+            String requestType = obj.getString("request_type").intern();
+            String correlationId = obj.getString("correlation_id").intern();
+            JsonNumber status = obj.getJsonNumber("status");
 
-        String requestType = obj.getString("request_type").intern();
-        String correlationId = obj.getString("correlation_id").intern();
-        JsonNumber status = obj.getJsonNumber("status");
+            processResponse(obj, requestType, status);  // Обработка ответа
 
+            // Расчёт времени выполнения
+            String resultTime = calculateTimeDifference();
+
+            // Создание и сохранение метрики в XML
+            MetricXml metricXml = new MetricXml(this.name, requestType, resultTime, this.urlArm, requestName, maxTime, status, stand, rerun);
+            if (addRequest.size() > 0 && requestStatic.equals(requestType)) {
+                metricXml.saveXml();  // Сохранение метрики в файл
+            }
+
+            // Закрытие соединений
+            closeConnections();
+        }
+    }
+
+    // Обработка ответа в зависимости от типа запроса
+    private void processResponse(JsonObject obj, String requestType, JsonNumber status) {
         if (requestType.equals("form:org:grid") || requestType.equals("form:client:grid")) {
             JsonObject responseObject = obj.getJsonObject("response");
-            if (responseObject.size() != 0) {
+            if (responseObject != null && !responseObject.isEmpty()) {
                 JsonArray data = responseObject.getJsonArray("data");
-                if (data.size() != 0) {
+                if (data != null && !data.isEmpty()) {
                     JsonObject usersObject = data.getJsonObject(0);
                     JsonObject buttonObject = usersObject.getJsonObject("button");
-                    globalStore.id = buttonObject.getString("id").intern();
-                    LOG.info("id = {}", globalStore.id);
+                    if (buttonObject != null) {
+                        globalStore.id = buttonObject.getString("id").intern();
+                        LOG.info("ID = {}", globalStore.id);
+                    }
                 }
             }
         }
 
-        String statusString = status.longValue() == 0 ? "Success" : "Error";
-        LOG.info("[RESPONSE] user = {}; request = {}; status = {}; correlation_id = {}", threadNumber, this.name, requestType, statusString);
+        // Логирование статуса
+        String statusString = status.longValue() == 0 ? "Успех" : "Ошибка";
+        LOG.info("[Ответ] пользователь = {}; запрос = {}; статус = {}; correlation_id = {}", threadNumber, this.name, requestType, statusString);
+    }
 
+    // Расчёт времени между началом и концом выполнения запроса
+    private String calculateTimeDifference() {
         LocalDateTime endTime = LocalDateTime.now();
         Duration diff = Duration.between(startTime, endTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss SSS");
-        String resultTime = String.format("%02d:%02d", diff.toSecondsPart(), diff.toMillisPart());
+        return String.format("%02d:%02d", diff.toSecondsPart(), diff.toMillisPart());
+    }
 
-        String startTimeString = startTime.format(formatter);
-        String endTimeString = endTime.format(formatter);
-        LOG.info("[TIME END] user = {}; request = {}; END = {}", threadNumber, this.name, endTimeString);
-
-        MetricXml metricXml = new MetricXml(this.name, requestType, resultTime, this.urlArm, requestName, maxTime, status, stand, rerun);
-
-        // MetricLogTxt metricLogTxt = new MetricLogTxt(msg);
-        // metricLogTxt.saveLogs();
-
-        if (addRequest.size() >= 0) {
-            if (requestStatic.equals(requestType)) {
-                metricXml.saveXml();
-            }
+    // Закрытие HTTP и WebSocket соединений
+    private void closeConnections() {
+        try {
+            client.stop();
+            httpClient.stop();
+        } catch (Exception e) {
+            LOG.warn("Ошибка при остановке соединений: {}", e.getMessage(), e);
         }
-
-        // try {
-        //     client.stop();
-        //     httpClient.stop();
-        // } catch (Throwable t) {
-        //     LOG.warn("Error while stopping: {}", t);
-        // }
     }
 }

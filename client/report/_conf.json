@@ -2,6 +2,7 @@
     "stand_info": "DEV",
     "users": [
         {"num": "1", "user": "opi_01", "role": "role_1", "password": "1qazXSW@"}
+
     ],
     "requests": [
         {
