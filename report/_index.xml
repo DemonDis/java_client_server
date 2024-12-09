@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="_main_page.xsl"?>
-<list>
-    <stand name="dev" url="localhost:3002" date="02.12.2024"/>
-    <stand name="prod" url="localhost:3002" date="02.12.2024"/>
-    <stand name="test" url="localhost:3002" date="02.12.2024"/>
-</list>

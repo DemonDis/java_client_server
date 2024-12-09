@@ -1,16 +1,15 @@
 package loader;
 
 import javax.json.JsonNumber;
-import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
+
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,64 +54,54 @@ public class MetricXml {
         
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
+        
         // Строка для статуса
         String statusString = status.longValue() == 0 ? "Success" : "Error";
-
-        // Если файл существует, то добавляем в него новый элемент
+        
+        Document doc;
+        // Если файл существует, то парсим и обновляем его
         if (file.exists()) {
             try {
-                Document doc = docBuilder.parse(filePath);
-                Node root = doc.getDocumentElement();
-                
-                // Создание нового элемента для метрики
-                Element metric = doc.createElement("metric");
-                root.appendChild(metric);
-                metric.setAttribute("requestName", requestType);
-                metric.setAttribute("request", requestName);
-                metric.setAttribute("status", statusString);
-                metric.setAttribute("user", name);
-
-                // Добавляем результат времени
-                Element resultTimeElement = doc.createElement("result_time");
-                resultTimeElement.setTextContent(resultTime);
-                metric.appendChild(resultTimeElement);
-                resultTimeElement.setAttribute("max_time", maxTime);
-
-                // Запись в файл
-                try (FileOutputStream output = new FileOutputStream(filePath)) {
-                    writeXml(doc, output);
-                }
-
+                doc = docBuilder.parse(filePath);
             } catch (IOException | SAXException e) {
                 e.printStackTrace();
+                return;
             }
-        } else { // Если файл не существует, создаем новый
-            try (FileOutputStream output = new FileOutputStream(filePath)) {
-                Document doc = docBuilder.newDocument();
-                Node rootElement = doc.createElement("metrics");
-                doc.appendChild(rootElement);
-                
-                // Создание корневого элемента
-                Element metric = doc.createElement("metric");
-                rootElement.appendChild(metric);
-                metric.setAttribute("requestName", requestType);
-                metric.setAttribute("request", requestName);
-                metric.setAttribute("status", statusString);
-                metric.setAttribute("user", name);
-
-                // Добавляем результат времени
-                Element resultTimeElement = doc.createElement("result_time");
-                resultTimeElement.setTextContent(resultTime);
-                metric.appendChild(resultTimeElement);
-                resultTimeElement.setAttribute("max_time", maxTime);
-
-                // Запись в файл
-                writeXml(doc, output);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } else {
+            // Если файл не существует, создаем новый
+            doc = docBuilder.newDocument();
+            Node rootElement = doc.createElement("metrics");
+            doc.appendChild(rootElement);
         }
+        
+        // Добавление элемента метрики в XML
+        Node root = doc.getDocumentElement();
+        Element metric = doc.createElement("metric");
+        root.appendChild(metric);
+        
+        addMetricAttributes(metric, statusString);
+        
+        // Добавляем результат времени
+        Element resultTimeElement = doc.createElement("result_time");
+        resultTimeElement.setTextContent(resultTime);
+        metric.appendChild(resultTimeElement);
+        resultTimeElement.setAttribute("max_time", maxTime);
+        
+        // Запись в файл
+        try (FileOutputStream output = new FileOutputStream(filePath)) {
+            writeXml(doc, output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Метод для добавления атрибутов к метке "metric"
+    private void addMetricAttributes(Element metric, String statusString) {
+        metric.setAttribute("requestName", requestType);
+        metric.setAttribute("request", requestName);
+        metric.setAttribute("status", statusString);
+        metric.setAttribute("user", name);
+        metric.setAttribute("rerun", rerun.toString());
     }
 
     // Метод для записи XML в файл

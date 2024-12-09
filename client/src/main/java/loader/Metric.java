@@ -11,15 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Файл: Metric.java
- * Описание: Метрики отклика API
- * Права (Copyright): (C) 2024
- *
- * @author Shibikin D
- * @since 03.12.2024
- */
-
 public class Metric {
 
     public static void main(String[] args) throws Exception {

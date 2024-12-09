@@ -79,7 +79,7 @@ public class SocketRequest {
 
     @OnWebSocketMessage
     public void onMessage(String msg) throws ParserConfigurationException, TransformerException {
-        LOG.info("[MSG]: {}", msg);
+        // LOG.info("[MSG]: {}", msg);
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
 
@@ -127,11 +127,11 @@ public class SocketRequest {
             }
         }
 
-        try {
-            client.stop();
-            httpClient.stop();
-        } catch (Throwable t) {
-            LOG.warn("Error while stopping: {}", t);
-        }
+        // try {
+        //     client.stop();
+        //     httpClient.stop();
+        // } catch (Throwable t) {
+        //     LOG.warn("Error while stopping: {}", t);
+        // }
     }
 }

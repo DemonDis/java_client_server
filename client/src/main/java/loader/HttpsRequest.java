@@ -178,7 +178,7 @@ class HttpsRequest implements Runnable {
 
                 Future<Session> fut = client.connect(socket, URI.create(urlARMSocket));
 
-                // for (int i = 0; i < rerun.longValue(); i++) {
+                for (int i = 0; i < rerun.longValue(); i++) {
                 // Дополнительные запросы
                 // if (add_request.size() > 0) {
 
@@ -186,7 +186,7 @@ class HttpsRequest implements Runnable {
                     Session session = fut.get();
                     session.getRemote().sendString(request_socket);
                     LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {}\n", Thread.currentThread().getName(), this.name, request_type);
-                // }
+                }
 
                 // Основной запрос
                 // if (add_request.size() >= 0) {

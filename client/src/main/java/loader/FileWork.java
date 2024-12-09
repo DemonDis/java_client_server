@@ -12,15 +12,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.apache.tools.ant.DirectoryScanner;
 import org.w3c.dom.DOMException;
 
-/**
- * Файл: FileWork.java
- * Описание: Работа с каталогами и файлами до запуска
- * Права (Copyright): (C) 2024
- *
- * @author Shibikin D
- * @since 03.12.2024
- */
-
 public class FileWork {
     /**
      * Основной метод для работы с файлами и каталогами.

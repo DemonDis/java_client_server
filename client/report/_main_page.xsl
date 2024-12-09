@@ -5,7 +5,7 @@
     <xsl:template match="/">
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="styles_main.css"/>
+                <link rel="stylesheet" type="text/css" href="styles.css"/>
                 <link rel="icon" type="image/x-icon" href="favicon.ico"/>
                 <title>Highload</title>
             </head>
