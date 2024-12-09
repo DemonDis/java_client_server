@@ -9,7 +9,7 @@ package loader;
 * @since 03.12.2024
 */
 
-public class GlobalStore {
+class GlobalStore {
     public static String id;
     public static String walletId;
     public static String formId;

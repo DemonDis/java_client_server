@@ -1,97 +1,107 @@
 package loader;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import java.util.concurrent.Future;
 import java.util.UUID;
+
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.InputStream;
 import java.io.BufferedReader;
+
 import java.net.URL;
+import java.net.URI;
+
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonObject;
 import javax.json.JsonNumber;
 import javax.json.JsonArray;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 
-public class HttpsRequest implements Runnable {
+class HttpsRequest implements Runnable {
     private String name;
-    private String requestType;
-    private String urlArm;
-    private String requestName;
-    private String maxTime;
-    private String requestBody;
+    private String request_type;
+    private String url_arm;
+    private String request_name;
+    private String max_time;
+    private String request_body;
     private String password;
-    private String requestRole;
-    private JsonArray addRequest;
+    private String request_role;
+    private JsonArray add_request;
     private JsonNumber rerun;
-    private JsonObject clientInfo;
-    private JsonObject orgInfo;
+    private JsonObject client_info;
+    private JsonObject org_info;
     private String stand;
-    private Exception ex;
 
-    static final Logger LOG = Log.getLogger(HttpsRequest.class);
-    private GlobalStore globalStore = new GlobalStore();
+    public HttpsRequest(String name, String request_type, String url_arm, String request_name, 
+                        String max_time, String request_body, String password, String request_role, 
+                        JsonArray add_request, JsonNumber rerun, JsonObject client_info, 
+                        JsonObject org_info, String stand) {
 
-    public HttpsRequest(String name, String requestType, String urlArm, String requestName, String maxTime, 
-                        String requestBody, String password, String requestRole, JsonArray addRequest, 
-                        JsonNumber rerun, JsonObject clientInfo, JsonObject orgInfo, String stand) {
         this.name = name;
-        this.requestType = requestType;
-        this.urlArm = urlArm;
-        this.requestName = requestName;
-        this.maxTime = maxTime;
-        this.requestBody = requestBody;
+        this.request_type = request_type;
+        this.url_arm = url_arm;
+        this.request_name = request_name;
+        this.max_time = max_time;
+        this.request_body = request_body;
         this.password = password;
-        this.requestRole = requestRole;
-        this.addRequest = addRequest;
+        this.request_role = request_role;
+        this.add_request = add_request;
         this.rerun = rerun;
-        this.clientInfo = clientInfo;
-        this.orgInfo = orgInfo;
+        this.client_info = client_info;
+        this.org_info = org_info;
         this.stand = stand;
     }
 
-    @Override
+    private Exception ex;
+    static final Logger LOG = Log.getLogger(HttpsRequest.class);
+    GlobalStore globalStore = new GlobalStore();
+
     public void run() {
         ex = null;
-        String urlARMLogin = "https://" + urlArm + "/v1/login";
-        String urlARMRole = "https://" + urlArm + "/v1/role";
+        String urlARMLogin = "https://" + "localhost:3002" + "/v1/login";
+        String urlARMRole = "https://" + "localhost:3002" + "/v1/role";
         String urlARMSocket = "wss://" + "localhost:3001" + "/v1/wss";
-
-        String login = String.format("{\"close_previous_session\":\"true\", \"username\": \"%s\", \"password\": \"%s\"}", this.name, password);
+        String login = String.format("{\"close_previous_session\":\"true\", \"username\":\"%s\", \"password\":\"%s\"}", 
+                                      this.name, password);
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
 
         // Статика для клиента
-        String clientSearchReason = clientInfo.getString("search_reason");
-        String clientWalletNumber = clientInfo.getString("wallet_number");
-        String clientLastName = clientInfo.getString("last_name");
-        String clientFirstName = clientInfo.getString("first_name");
+        String client_search_reason = client_info.getString("search_reason");
+        String client_wallet_number = client_info.getString("wallet_number");
+        String client_last_name = client_info.getString("last_name");
+        String client_first_name = client_info.getString("first_name");
 
         // Статика для организации
-        String orgSearchReason = orgInfo.getString("search_reason");
-        String orgWalletNumber = orgInfo.getString("wallet_number");
-        String orgShortName = orgInfo.getString("org_short_name");
+        String org_search_reason = org_info.getString("search_reason");
+        String org_wallet_number = org_info.getString("wallet_number");
+        String org_short_name = org_info.getString("org_short_name");
+
+        TrustManager[] trustAllCerts = new TrustManager[] { new TrustAllCertificatesManager() };
 
         try {
-            // Создаем контекст SSL для обхода проверки сертификатов (не рекомендуется для продакшн-среды)
-            TrustManager[] trustAllCerts = new TrustManager[]{new TrustAllCertificatesManager()};
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
             TrustAllHostsVerifier allHostsValid = new TrustAllHostsVerifier();
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
-            // Логин
+            // Login
             URL url = new URL(urlARMLogin);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
@@ -100,83 +110,93 @@ public class HttpsRequest implements Runnable {
             con.setDoOutput(true);
             con.setDoInput(true);
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss SSS");
+            LocalDateTime startTime = LocalDateTime.now();
+            String startTimeString = startTime.format(formatter);
+
+            DateTimeFormatter formatterTable = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            String transaction_timestamp_max = startTime.format(formatterTable) + ", 23:59:59";
+            LocalDateTime newData = startTime.minusDays(30);
+            String transaction_timestamp_min = newData.format(formatterTable) + ", 00:00:00";
+
             try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
-                LOG.info("® [TIME START] () user = {}: START = {}", Thread.currentThread().getName(), this.name, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss SSS")));
+                LOG.info("® [TIME START] (): user = (" + Thread.currentThread().getName() + " : START = " + startTimeString);
                 writer.write(login);
             }
 
-            // Чтение ответа
-            try (InputStream is = con.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                JsonReader reader = Json.createReader(br)) {
-                JsonObject obj = reader.readObject();
-                String sessionId = obj.getString("session_id");
+            InputStream is = con.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            JsonReader reader = Json.createReader(br);
+            JsonObject obj = reader.readObject();
+            br.close();
+            isr.close();
+            reader.close();
+            String sessionId = obj.getString("session_id");
 
-                // Выбор роли
-                URL url2 = new URL(urlARMRole);
-                HttpsURLConnection con2 = (HttpsURLConnection) url2.openConnection();
-                con2.setRequestMethod("POST");
-                con2.setRequestProperty("Content-Type", "application/json; utf-8");
-                con2.setConnectTimeout(10000);
-                con2.setDoOutput(true);
-                con2.setDoInput(true);
+            // Выбор role
+            URL url_2 = new URL(urlARMRole);
+            HttpsURLConnection con_2 = (HttpsURLConnection) url_2.openConnection();
+            con_2.setRequestMethod("POST");
+            con_2.setRequestProperty("Content-Type", "application/json; utf-8");
+            con_2.setConnectTimeout(10000);
+            con_2.setDoOutput(true);
+            con_2.setDoInput(true);
 
-                String role = String.format("{\"role\":\"%s\", \"session_id\":\"%s\"}", requestRole, sessionId);
+            String role = String.format("{\"role\":\"%s\", \"session_id\":\"%s\"}", request_role, sessionId);
 
-                try (OutputStreamWriter writer2 = new OutputStreamWriter(con2.getOutputStream())) {
-                    writer2.write(role);
-                }
-
-                // Чтение ответа для роли
-                try (InputStream is2 = con2.getInputStream();
-                    InputStreamReader isr2 = new InputStreamReader(is2);
-                    BufferedReader br2 = new BufferedReader(isr2);
-                    JsonReader reader2 = Json.createReader(br2)) {
-                    JsonObject obj2 = reader2.readObject();
-                    String tokenJWT = obj2.getString("token");
-
-                    // Сокет
-                    SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-                    sslContextFactory.setTrustAll(true);
-                    sslContextFactory.setEndpointIdentificationAlgorithm("HTTPS");
-                    HttpClient httpClient = new HttpClient(sslContextFactory);
-                    httpClient.start();
-
-                    WebSocketClient client = new WebSocketClient(httpClient);
-                    client.start();
-
-                    // Подключение к WebSocket
-                    // SocketRequest socketRequest = new SocketRequest(
-                    //     httpClient, client, 
-                    //     this.name, LocalDateTime.now(), 
-                    //     Thread.currentThread().getName(), this.urlArm, requestName, 
-                    //     maxTime, addRequest, requestType, stand, rerun
-                    // );
-
-                    // Future<Session> fut = client.connect(socketRequest, URI.create(urlARMSocket));
-
-                    // Дополнительные запросы
-                    if (addRequest.size() > 0) {
-                        Thread.sleep(500);
-                    }
-
-                    // Основной запрос
-                    if (addRequest.size() >= 0) {
-                        // Обработка основного запроса
-                    }
-
-                }
+            try (OutputStreamWriter writer_2 = new OutputStreamWriter(con_2.getOutputStream())) {
+                writer_2.write(role);
             }
-        } catch (Exception e) {
-            LOG.warn(e);
-            synchronized (this) {
-                this.ex = e;
-            }
-        }
-    }
 
-    public synchronized Exception getException() {
-        return ex;
-    }
+            InputStream is_2 = con_2.getInputStream();
+            InputStreamReader isr_2 = new InputStreamReader(is_2);
+            BufferedReader br_2 = new BufferedReader(isr_2);
+            JsonReader reader_2 = Json.createReader(br_2);
+            JsonObject obj_2 = reader_2.readObject();
+            br_2.close();
+            isr_2.close();
+            reader_2.close();
+            String tokenJWT = obj_2.getString("token");
+
+            // Socket
+            SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+            sslContextFactory.setTrustAll(true);
+            sslContextFactory.setEndpointIdentificationAlgorithm("HTTPS");
+            HttpClient httpClient = new HttpClient(sslContextFactory);
+
+            try {
+                httpClient.start();
+                WebSocketClient client = new WebSocketClient(httpClient);
+                client.start();
+                SocketRequest socket = new SocketRequest(
+                    httpClient, client, this.name, startTime, 
+                    Thread.currentThread().getName(), this.url_arm,
+                    request_name, max_time, add_request, 
+                    request_type, stand, rerun
+                );
+
+                Future<Session> fut = client.connect(socket, URI.create(urlARMSocket));
+
+                // for (int i = 0; i < rerun.longValue(); i++) {
+                // Дополнительные запросы
+                // if (add_request.size() > 0) {
+
+                    String request_socket = String.format(request_body, uuidString, request_type, tokenJWT);
+                    Session session = fut.get();
+                    session.getRemote().sendString(request_socket);
+                    LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {}\n", Thread.currentThread().getName(), this.name, request_type);
+                // }
+
+                // Основной запрос
+                // if (add_request.size() >= 0) {
+                //     String request_socket = String.format(request_body, uuidString, request_type, tokenJWT);
+                //     Session session = fut.get();
+                //     session.getRemote().sendString(request_socket);
+                //     LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {}\n", Thread.currentThread().getName(), this.name, request_type);
+                // }
+        
+            } catch (Throwable t) { LOG.warn(t); } 
+        } catch (Exception e) { synchronized(this) { this.ex = ex; } }
+    } public synchronized Exception getException() { return ex; }
 }

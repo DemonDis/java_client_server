@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<metrics>
+    <metric request="#1 Запрос" requestName="auth:info" status="Success" user="opi_01">
+        <result_time max_time="5">00:335</result_time>
+    </metric>
+</metrics>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <list>
-    <url name="form:1" quantity="1" request="#1 Запрос">
-        <user total="1">role</user>
+    <url name="auth:info" quantity="1" request="#1 Запрос">
+        <user total="1">opi</user>
     </url>
 </list>

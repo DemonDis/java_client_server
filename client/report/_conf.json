@@ -1,17 +1,17 @@
 {
     "stand_info": "DEV",
     "users": [
-        {"num": "1", "user": "role_1", "role": "role_1", "password": "123"}
+        {"num": "1", "user": "opi_01", "role": "role_1", "password": "1qazXSW@"}
     ],
     "requests": [
         {
-            "request_type": "form:1",
-            "users": ["role"],
+            "request_type": "auth:info",
+            "users": ["opi"],
             "name": "#1 Запрос",
             "max_time": "5",
             "add_request": [],
             "rerun": 0,
-            "request_body": "{\"message_id\":\"%s\",\"request_type\":\"%s\",\"request\": {\"name\": \"client_1\"},\"token\": \"%s\"}",
+            "request_body": "{\"message_id\":\"%s\",\"request_type\":\"%s\",\"request\": {},\"token\": \"%s\"}",
             "timeout": 3
         }
     ]

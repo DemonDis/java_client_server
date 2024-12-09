@@ -1,19 +1,5 @@
 package loader;
 
-import java.time.LocalDateTime;
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
-import java.io.StringReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonNumber;
-
-import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -21,141 +7,131 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
+import java.io.StringReader;
+
+import javax.json.Json;
+import javax.json.JsonReader;
+import javax.json.JsonObject;
+import javax.json.JsonNumber;
+import javax.json.JsonArray;
+
+import org.eclipse.jetty.util.log.Log;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import java.util.UUID;
 
 @WebSocket
 public class SocketRequest {
-    private final String name;
-    private final LocalDateTime startTime;
-    private final String threadNumber;
-    private final String urlArm;
-    private final String requestName;
-    private final String maxTime;
-    private final HttpClient httpClient;
-    private final WebSocketClient client;
+    private JsonNumber rerun;
+    private HttpClient httpClient;
+    private WebSocketClient client;
+    private String name;
+    private LocalDateTime startTime;
+    private String threadNumber;
+    private String urlArm;
+    private String requestName;
+    private String maxTime;
+    private JsonArray addRequest;
+    private String requestStatic;
+    private String stand;
 
-    static final Logger LOG = Log.getLogger(SocketRequest.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final ArrayNode logs = objectMapper.createArrayNode();  // Массив для хранения логов
-
-    public SocketRequest(String name, LocalDateTime startTime, String threadNumber, 
-                         String urlArm, String requestName, String maxTime,
-                         HttpClient httpClient, WebSocketClient client) {
-        this.name = name; 
+    public SocketRequest(HttpClient httpClient, WebSocketClient client, String name, LocalDateTime startTime,
+                         String threadNumber, String urlArm, String requestName, String maxTime,
+                         JsonArray addRequest, String requestStatic, String stand, JsonNumber rerun) {
+        this.httpClient = httpClient;
+        this.client = client;
+        this.name = name;
         this.startTime = startTime;
         this.threadNumber = threadNumber;
         this.urlArm = urlArm;
         this.requestName = requestName;
         this.maxTime = maxTime;
-        this.httpClient = httpClient;
-        this.client = client;
+        this.addRequest = addRequest;
+        this.requestStatic = requestStatic;
+        this.stand = stand;
+        this.rerun = rerun;
     }
 
-    // public SocketRequest(HttpClient httpClient2, WebSocketClient client2, String name2, LocalDateTime now, String name3,
-    //         String urlArm2, String requestName2, String maxTime2, JsonArray addRequest, String requestType,
-    //         String stand, JsonNumber rerun) {
-    //     //TODO Auto-generated constructor stub
-    // }
+    static final Logger LOG = Log.getLogger(SocketRequest.class);
+    GlobalStore globalStore = new GlobalStore();
 
     @OnWebSocketConnect
-    public void onConnect(Session sess) {
-        LOG.info("🔗 onConnect 🔗 user = {}", this.name);
-        logToFile("onConnect", "User connected: " + this.name);
+    public void onConnect(Session session) {
+        LOG.info("onConnect: user = {}", this.name);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        LOG.info("🔐 onClose 🔐 thread = {}; user = {}; statusCode = {}; reason = {}", 
-                  threadNumber, this.name, statusCode, reason);
-        logToFile("onClose", "Connection closed: " + reason);
+        LOG.info("onClose: thread = {}; user = {}; status = {}; reason = {}", threadNumber, this.name, statusCode, reason);
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        LOG.warn("WebSocket error: {}", cause.getMessage(), cause);
-        logToFile("onError", "Error occurred: " + cause.getMessage());
+        LOG.warn(cause);
     }
 
     @OnWebSocketMessage
-    public void onMessage(String msg) {
+    public void onMessage(String msg) throws ParserConfigurationException, TransformerException {
+        LOG.info("[MSG]: {}", msg);
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
 
-        // Обрабатываем JSON сообщение
-        JsonObject obj = Json.createReader(new StringReader(msg)).readObject();
-        String requestType = obj.getString("request_type");
+        JsonReader reader = Json.createReader(new StringReader(msg));
+        JsonObject obj = reader.readObject();
+        reader.close();
+
+        String requestType = obj.getString("request_type").intern();
+        String correlationId = obj.getString("correlation_id").intern();
         JsonNumber status = obj.getJsonNumber("status");
-        LOG.info("📤 [ОТВЕТ] 📤 thread = {}; user = {}; request = {}; status = {};", 
-                  threadNumber, this.name, requestType, status);
-        logToFile("onMessage", "Message received: " + msg);
+
+        if (requestType.equals("form:org:grid") || requestType.equals("form:client:grid")) {
+            JsonObject responseObject = obj.getJsonObject("response");
+            if (responseObject.size() != 0) {
+                JsonArray data = responseObject.getJsonArray("data");
+                if (data.size() != 0) {
+                    JsonObject usersObject = data.getJsonObject(0);
+                    JsonObject buttonObject = usersObject.getJsonObject("button");
+                    globalStore.id = buttonObject.getString("id").intern();
+                    LOG.info("id = {}", globalStore.id);
+                }
+            }
+        }
+
+        String statusString = status.longValue() == 0 ? "Success" : "Error";
+        LOG.info("[RESPONSE] user = {}; request = {}; status = {}; correlation_id = {}", threadNumber, this.name, requestType, statusString);
 
         LocalDateTime endTime = LocalDateTime.now();
         Duration diff = Duration.between(startTime, endTime);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss SSS");
-        String resultTime = String.format("%02d", diff.toMillisPart());  // Миллисекунды
+        String resultTime = String.format("%02d:%02d", diff.toSecondsPart(), diff.toMillisPart());
 
-        // Форматируем время старта и окончания
         String startTimeString = startTime.format(formatter);
         String endTimeString = endTime.format(formatter);
+        LOG.info("[TIME END] user = {}; request = {}; END = {}", threadNumber, this.name, endTimeString);
 
-        LOG.info("🧭 [TIME END] thread = {}; user = {}; request = {}; END = {}", 
-                  threadNumber, this.name, requestType, endTimeString);
-        LOG.info("⌚️ [TIME] thread = {}; user = {}; request = {}; TIME = {}", 
-                  threadNumber, this.name, requestType, resultTime);
+        MetricXml metricXml = new MetricXml(this.name, requestType, resultTime, this.urlArm, requestName, maxTime, status, stand, rerun);
 
-        // Сохраняем метрики в XML
-        MetricXml metricXml = new MetricXml(this.name, requestType, resultTime, this.urlArm, requestName, maxTime);
-        try {
-            metricXml.saveXml();
-        } catch (Exception e) {
-            LOG.warn("Ошибка сохранения XML: {}", e.getMessage());
-            logToFile("saveXml", "XML save error: " + e.getMessage());
+        // MetricLogTxt metricLogTxt = new MetricLogTxt(msg);
+        // metricLogTxt.saveLogs();
+
+        if (addRequest.size() >= 0) {
+            if (requestStatic.equals(requestType)) {
+                metricXml.saveXml();
+            }
         }
 
-        // Закрытие WebSocket и HttpClient с гарантией
         try {
-            if (httpClient != null) {
-                httpClient.stop();
-            }
-            if (client != null) {
-                client.stop();
-            }
-        } catch (Exception e) {
-            LOG.warn("Ошибка при остановке клиентов: {}", e.getMessage());
-            logToFile("clientStop", "Client stop error: " + e.getMessage());
-        }
-    }
-
-    // Метод для записи логов в файл
-    private void logToFile(String event, String message) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String timestamp = now.format(formatter);
-
-        // Создаем новый объект для лога
-        ObjectNode logEntry = objectMapper.createObjectNode();
-        logEntry.put("timestamp", timestamp);
-        logEntry.put("thread", threadNumber);
-        logEntry.put("event", event);
-        logEntry.put("message", message);
-
-        // Добавляем объект в массив логов
-        logs.add(logEntry);
-
-        // Запись в файл
-        try (FileWriter writer = new FileWriter("./report/log/log.json", false)) {
-            // Если файл существует, записываем весь массив JSON
-            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logs));
-        } catch (IOException e) {
-            LOG.warn("Ошибка при записи в файл логов: {}", e.getMessage());
+            client.stop();
+            httpClient.stop();
+        } catch (Throwable t) {
+            LOG.warn("Error while stopping: {}", t);
         }
     }
 }
