@@ -1,0 +1,28 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="metrics">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="metric" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="result_time">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="max_time" type="xs:string" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="requestName" type="xs:string" use="required"/>
+                        <xs:attribute name="request" type="xs:string" use="required"/>
+                        <xs:attribute name="status" type="xs:string" use="required"/>
+                        <xs:attribute name="user" type="xs:string" use="required"/>
+                        <xs:attribute name="rerun" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

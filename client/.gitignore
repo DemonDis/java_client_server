@@ -3,4 +3,5 @@
 *.jar
 
 /target
-/report/users
+/report/stands
+/report/backup

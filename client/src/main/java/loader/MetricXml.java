@@ -47,47 +47,57 @@ public class MetricXml {
         this.rerun = rerun;
     }
 
-    // Метод для сохранения XML отчета
+    // Метод для сохранения XML-отчета
     public void saveXml() throws ParserConfigurationException, TransformerException, TransformerFactoryConfigurationError, DOMException {
         String filePath = "./report/stands/" + stand + "/" + name + "_result.xml";
         File file = new File(filePath);
-        
+
+        // Настройка DocumentBuilderFactory с использованием схемы и валидации
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true); // Включение поддержки пространств имен
+        docFactory.setValidating(true); // Включение режима валидации
+        docFactory.setIgnoringElementContentWhitespace(true); // Игнорирование пробелов между элементами
+
+        // Указание схемы
+        docFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
+        docFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource", new File("./report/schema/metrics.xsd"));
+
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        
-        // Строка для статуса
-        String statusString = status.longValue() == 0 ? "Success" : "Error";
-        
+
+        // Преобразование статуса в строку
+        String statusString = status.longValue() == 0 ? "0" : "1";
+
         Document doc;
-        // Если файл существует, то парсим и обновляем его
+        // Если файл существует, парсим его
         if (file.exists()) {
             try {
-                doc = docBuilder.parse(filePath);
+                doc = docBuilder.parse(file);
             } catch (IOException | SAXException e) {
                 e.printStackTrace();
                 return;
             }
         } else {
-            // Если файл не существует, создаем новый
+            // Если файла нет, создаем новый документ
             doc = docBuilder.newDocument();
             Node rootElement = doc.createElement("metrics");
             doc.appendChild(rootElement);
         }
-        
-        // Добавление элемента метрики в XML
+
+        // Добавление нового элемента метрики
         Node root = doc.getDocumentElement();
         Element metric = doc.createElement("metric");
         root.appendChild(metric);
-        
+
+        // Установка атрибутов метрики
         addMetricAttributes(metric, statusString);
-        
-        // Добавляем результат времени
+
+        // Добавление элемента result_time
         Element resultTimeElement = doc.createElement("result_time");
         resultTimeElement.setTextContent(resultTime);
         metric.appendChild(resultTimeElement);
         resultTimeElement.setAttribute("max_time", maxTime);
-        
-        // Запись в файл
+
+        // Запись XML в файл
         try (FileOutputStream output = new FileOutputStream(filePath)) {
             writeXml(doc, output);
         } catch (IOException e) {
@@ -95,7 +105,7 @@ public class MetricXml {
         }
     }
 
-    // Метод для добавления атрибутов к метке "metric"
+    // Метод для добавления атрибутов к элементу "metric"
     private void addMetricAttributes(Element metric, String statusString) {
         metric.setAttribute("requestName", requestType);
         metric.setAttribute("request", requestName);
@@ -109,7 +119,7 @@ public class MetricXml {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
 
-        // Настройка выводных параметров для преобразования
+        // Настройка параметров для преобразования
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
@@ -117,7 +127,7 @@ public class MetricXml {
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
-        // Запись в поток
+        // Запись XML в поток
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(output);
         transformer.transform(source, result);
