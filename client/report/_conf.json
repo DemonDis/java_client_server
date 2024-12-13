@@ -11,9 +11,9 @@
             "name": "#1 Запрос",
             "max_time": "5",
             "add_request": [],
-            "rerun": 3,
+            "rerun": 7,
             "request_body": "{\"message_id\":\"%s\",\"request_type\":\"%s\",\"request\": {},\"token\": \"%s\"}",
-            "timeout": 3
+            "timeout": 10
         }
     ]
 }

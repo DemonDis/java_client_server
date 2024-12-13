@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<metrics>
+                            
+    
+    
+    
+    
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+                                                        
+        
+        
+        
+        
+        
+        <result_time max_time="5">00:302</result_time>
+                                                    
+    
+    
+    
+    
+    
+    </metric>
+                        
+    
+    
+    
+    
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+                                                
+        
+        
+        
+        
+        <result_time max_time="5">00:307</result_time>
+                                            
+    
+    
+    
+    
+    </metric>
+                    
+    
+    
+    
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+                                        
+        
+        
+        
+        <result_time max_time="5">00:314</result_time>
+                                    
+    
+    
+    
+    </metric>
+                
+    
+    
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+                                
+        
+        
+        <result_time max_time="5">00:317</result_time>
+                            
+    
+    
+    </metric>
+            
+    
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+                        
+        
+        <result_time max_time="5">00:322</result_time>
+                    
+    
+    </metric>
+        
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+                
+        <result_time max_time="5">00:326</result_time>
+            
+    </metric>
+    
+    <metric request="#1 Запрос" requestName="auth:info" rerun="6" status="Success" user="opi_01">
+        <result_time max_time="5">00:330</result_time>
+    </metric>
+</metrics>

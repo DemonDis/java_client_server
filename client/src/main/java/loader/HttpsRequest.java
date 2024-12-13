@@ -24,8 +24,10 @@ import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import java.util.concurrent.Future;
 
-class HttpsRequest implements Runnable {
+public class HttpsRequest implements Runnable {
+
     private String name;
     private String request_type;
     private String url_arm;
@@ -64,6 +66,7 @@ class HttpsRequest implements Runnable {
     static final Logger LOG = Log.getLogger(HttpsRequest.class);
     GlobalStore globalStore = new GlobalStore();
 
+    @Override
     public void run() {
         ex = null;
         String urlARMLogin = "https://" + "localhost:3002" + "/v1/login";
@@ -158,35 +161,34 @@ class HttpsRequest implements Runnable {
             sslContextFactory.setTrustAll(true);
             sslContextFactory.setEndpointIdentificationAlgorithm("HTTPS");
             HttpClient httpClient = new HttpClient(sslContextFactory);
+            WebSocketClient client = new WebSocketClient(httpClient);
 
             try {
                 httpClient.start();
-                WebSocketClient client = new WebSocketClient(httpClient);
                 client.start();
                 SocketRequest socket = new SocketRequest(
-                    httpClient, client, this.name, startTime, 
-                    Thread.currentThread().getName(), this.url_arm,
-                    request_name, max_time, add_request, 
-                    request_type, stand, rerun
+                    httpClient, client, this.name, 
+                    startTime,  Thread.currentThread().getName(), this.url_arm,
+                    request_name, max_time, add_request, request_type, stand, rerun
                 );
-
-                Future<Session> fut = client.connect(socket, URI.create(urlARMSocket));
+                Future<Session> fut = client.connect(socket, new URI(urlARMSocket));
+                Session session = fut.get();
 
                 for (int i = 0; i < rerun.longValue(); i++) {
+                // for (int i = 0; i < 10; i++) {
+                    socket.setCount(i);
                     String request_socket = String.format(request_body, uuidString, request_type, tokenJWT);
-                    Session session = fut.get();
                     session.getRemote().sendString(request_socket);
-                    LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {} (run # {})\n", 
-                            Thread.currentThread().getName(), this.name, request_type, i + 1);
+                    LOG.info("📤 [ЗАПРОС] 📤 {}, user = {}; request = {} (run # {})\n", Thread.currentThread().getName(), this.name, request_type, i);
                 }
 
-            } catch (Throwable t) { 
-                LOG.warn(t); 
+            } catch (Throwable t) {
+                LOG.warn(t);
             }
-        } catch (Exception e) { 
-            synchronized(this) { 
-                this.ex = e; 
-            } 
+        } catch (Exception e) {
+            synchronized (this) {
+                this.ex = e;
+            }
         }
     }
 

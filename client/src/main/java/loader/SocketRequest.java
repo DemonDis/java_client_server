@@ -25,7 +25,9 @@ import org.eclipse.jetty.util.log.Log;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @WebSocket
 public class SocketRequest {
@@ -41,9 +43,7 @@ public class SocketRequest {
     private JsonArray addRequest;
     private String requestStatic;
     private String stand;
-
-    static final Logger LOG = Log.getLogger(SocketRequest.class);
-    private GlobalStore globalStore = new GlobalStore();
+    public int rerunInd;
 
     public SocketRequest(HttpClient httpClient, WebSocketClient client, String name, LocalDateTime startTime,
                          String threadNumber, String urlArm, String requestName, String maxTime,
@@ -60,88 +60,92 @@ public class SocketRequest {
         this.requestStatic = requestStatic;
         this.stand = stand;
         this.rerun = rerun;
+        this.rerunInd = 0;
     }
+
+    static final Logger LOG = Log.getLogger(SocketRequest.class);
+    GlobalStore globalStore = new GlobalStore();
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        LOG.info("Подключение: пользователь = {}", this.name);
+        LOG.info("onConnect: user = {}", this.name);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        LOG.info("Закрытие: поток = {}; пользователь = {}; статус = {}; причина = {}", threadNumber, this.name, statusCode, reason);
+        LOG.info("onClose: thread = {}; user = {}; status = {}; reason = {}", threadNumber, this.name, statusCode, reason);
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        LOG.warn("Ошибка WebSocket: {}", cause.getMessage(), cause);
+        LOG.warn(cause);
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) throws ParserConfigurationException, TransformerException {
-        UUID uuid = UUID.randomUUID();  // Генерация уникального идентификатора для запроса
+        // LOG.info("[MSG]: {}", msg);
+        UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
 
-        // Чтение и парсинг JSON сообщения
-        try (JsonReader reader = Json.createReader(new StringReader(msg))) {
-            JsonObject obj = reader.readObject();
-            String requestType = obj.getString("request_type").intern();
-            String correlationId = obj.getString("correlation_id").intern();
-            JsonNumber status = obj.getJsonNumber("status");
+        JsonReader reader = Json.createReader(new StringReader(msg));
+        JsonObject obj = reader.readObject();
+        reader.close();
 
-            processResponse(obj, requestType, status);  // Обработка ответа
+        String requestType = obj.getString("request_type").intern();
+        String correlationId = obj.getString("correlation_id").intern();
+        JsonNumber status = obj.getJsonNumber("status");
 
-            // Расчёт времени выполнения
-            String resultTime = calculateTimeDifference();
-
-            // Создание и сохранение метрики в XML
-            MetricXml metricXml = new MetricXml(this.name, requestType, resultTime, this.urlArm, requestName, maxTime, status, stand, rerun);
-            if (addRequest.size() > 0 && requestStatic.equals(requestType)) {
-                metricXml.saveXml();  // Сохранение метрики в файл
-            }
-
-            // Закрытие соединений
-            closeConnections();
-        }
-    }
-
-    // Обработка ответа в зависимости от типа запроса
-    private void processResponse(JsonObject obj, String requestType, JsonNumber status) {
         if (requestType.equals("form:org:grid") || requestType.equals("form:client:grid")) {
             JsonObject responseObject = obj.getJsonObject("response");
-            if (responseObject != null && !responseObject.isEmpty()) {
+            if (responseObject.size() != 0) {
                 JsonArray data = responseObject.getJsonArray("data");
-                if (data != null && !data.isEmpty()) {
+                if (data.size() != 0) {
                     JsonObject usersObject = data.getJsonObject(0);
                     JsonObject buttonObject = usersObject.getJsonObject("button");
-                    if (buttonObject != null) {
-                        globalStore.id = buttonObject.getString("id").intern();
-                        LOG.info("ID = {}", globalStore.id);
-                    }
+                    globalStore.id = buttonObject.getString("id").intern();
+                    LOG.info("id = {}", globalStore.id);
                 }
             }
         }
 
-        // Логирование статуса
-        String statusString = status.longValue() == 0 ? "Успех" : "Ошибка";
-        LOG.info("[Ответ] пользователь = {}; запрос = {}; статус = {}; correlation_id = {}", threadNumber, this.name, requestType, statusString);
-    }
+        String statusString = status.longValue() == 0 ? "Success" : "Error";
+        LOG.info("[RESPONSE] user = {}; request = {}; status = {}; correlation_id = {}", threadNumber, this.name, requestType, statusString);
 
-    // Расчёт времени между началом и концом выполнения запроса
-    private String calculateTimeDifference() {
         LocalDateTime endTime = LocalDateTime.now();
         Duration diff = Duration.between(startTime, endTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss SSS");
-        return String.format("%02d:%02d", diff.toSecondsPart(), diff.toMillisPart());
+        String resultTime = String.format("%02d:%02d", diff.toSecondsPart(), diff.toMillisPart());
+
+        String startTimeString = startTime.format(formatter);
+        String endTimeString = endTime.format(formatter);
+        LOG.info("[TIME END] user = {}; request = {}; END = {}", threadNumber, this.name, endTimeString);
+
+        MetricXml metricXml = new MetricXml(this.name, requestType, resultTime, this.urlArm, requestName, maxTime, status, stand, rerun);
+
+        // MetricLogTxt metricLogTxt = new MetricLogTxt(msg);
+        // metricLogTxt.saveLogs();
+        // int rerunIndValue = getCount();
+      System.out.println("[-----🎊----] " + "  " + this.rerunInd);
+        
+        if (addRequest.size() >= 0) {
+            if (requestStatic.equals(requestType)) {
+                metricXml.saveXml();
+            }
+        }
+
+        // try {
+        //     client.stop();
+        //     httpClient.stop();
+        // } catch (Throwable t) {
+        //     LOG.warn("Error while stopping: {}", t);
+        // }
     }
 
-    // Закрытие HTTP и WebSocket соединений
-    private void closeConnections() {
-        try {
-            client.stop();
-            httpClient.stop();
-        } catch (Exception e) {
-            LOG.warn("Ошибка при остановке соединений: {}", e.getMessage(), e);
-        }
+    public void setCount(int rerunInd) {
+        this.rerunInd = rerunInd;
+    }
+
+    public int getCount() {
+        return this.rerunInd;
     }
 }
